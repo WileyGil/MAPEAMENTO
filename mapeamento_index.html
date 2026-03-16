@@ -1,0 +1,1966 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapeamento de Processos</title>
+<style>
+:root{
+--bg:#d4d4d4;--card:#ededed;--soft:#e1e1e1;--text:#101214;--muted:#4f5a63;--line:#98a3ab;--primary:#0a93b8;--primary-dark:#056c87;--primary-soft:#d8e7ef;--danger:#f6dddd;--danger-text:#8a1d1d;--ok:#ddeee2;--warn:#f5e8c7;
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Tahoma,Verdana,Arial,sans-serif;background:var(--bg);color:var(--text)}
+a{text-decoration:none;color:inherit}button,input,textarea,select{font:inherit}h1,h2,h3,h4,p{margin:0}
+.container{width:min(calc(100% - 32px),1240px);margin:auto}.section{padding:14px 0}.grid{display:grid;gap:16px}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card,.dialog{background:var(--card);border:1px solid var(--line);border-radius:2px;box-shadow:none}
+.btn,.icon-btn,.doc-tool{border:1px solid #7c8a93;border-radius:2px;background:linear-gradient(180deg,#fafafa 0%,#d7d7d7 100%);color:#11181d;box-shadow:inset 0 1px 0 rgba(255,255,255,.75);cursor:pointer;transition:.18s}
+.btn:hover,.icon-btn:hover,.doc-tool:hover{background:linear-gradient(180deg,#fff 0%,#cdcdcd 100%);border-color:#6c7a83}
+.btn,.icon-btn{padding:10px 14px;font-weight:800}.btn.small,.icon-btn{padding:7px 10px;font-size:.84rem}
+.btn.danger,.icon-btn.danger{background:linear-gradient(180deg,#fff5f5 0%,#efcece 100%);border-color:#c79a9a;color:#7d1f1f}
+.btn.save-accent{background:#2f6f52;color:#fff;border-color:#255743}.btn.save-accent:hover{background:#285e46;color:#fff}
+.btn.discard-accent{background:#8a4b4b;color:#fff;border-color:#6f3c3c}.btn.discard-accent:hover{background:#764040;color:#fff}
+.btn:disabled,.icon-btn:disabled{opacity:.55;cursor:not-allowed}.hidden{display:none!important}
+h1{font-size:clamp(2rem,4vw,2.9rem);line-height:1.04;letter-spacing:-.03em;margin-bottom:10px}
+h2{font-size:clamp(1.45rem,3vw,2rem);line-height:1.1;letter-spacing:-.02em;margin-bottom:8px;color:#114962}
+h3{font-size:1.03rem}.muted{color:var(--muted)}
+.topbar{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,#099fc4 0%,#067892 55%,#045e75 100%);border-bottom:1px solid #034d61}
+.topbar-inner,.section-head,.card-head,.hero-layout,.focus-head,.issues-head,.editor-head{display:flex;align-items:center;justify-content:space-between;gap:14px}.topbar-inner{min-height:72px}
+.brand{display:flex;align-items:center;gap:12px;color:#f3fbff;font-weight:800}.brand small,.nav a{color:#f3fbff}
+.brand-mark{width:42px;height:42px;border-radius:12px;background:linear-gradient(180deg,var(--primary) 0%,var(--primary-dark) 100%);position:relative}
+.brand-mark:before,.brand-mark:after{content:"";position:absolute;background:#fff;border-radius:999px}.brand-mark:before{width:18px;height:3px;left:10px;top:12px;box-shadow:0 8px 0 #fff,0 16px 0 #fff}.brand-mark:after{width:6px;height:6px;right:8px;top:17px}
+.nav,.focus-head-actions,.section-actions,.issue-footer,.issue-top-actions,.editor-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start}
+.nav a{padding:9px 12px;border-radius:2px;border:1px solid transparent}.nav a:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.22)}
+.hero{padding:18px 0 12px}.hero-card{overflow:hidden}.hero-layout{align-items:stretch;gap:0}.hero-main{flex:1.15;padding:30px;display:grid;gap:14px;background:linear-gradient(180deg,#eeeeee 0%,#dedede 100%);border-right:1px solid #a0a9af}.hero-side{flex:.95;padding:24px;display:grid;gap:18px;background:#dadada;overflow:visible}
+.eyebrow,.tag{display:inline-flex;width:max-content;padding:8px 12px;border-radius:2px;font-size:.8rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;background:#d7e7ef;color:#114962;border:1px solid #86a0ad}
+.hero-note{padding:14px 16px;border:1px solid #95a8b2;border-radius:2px;background:#e1ecef;color:#224a5c;line-height:1.6;font-weight:600}
+.selector-block{display:grid;gap:10px;position:relative}.selector-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.selector-label,.kicker{font-size:.82rem;font-weight:900;color:#114962;text-transform:uppercase;letter-spacing:.06em}
+.selector-tools{display:flex;gap:6px;opacity:0;pointer-events:none;transition:.18s}.selector-block:hover .selector-tools,.selector-block:focus-within .selector-tools{opacity:1;pointer-events:auto}
+.selector-tool{width:28px;height:28px;padding:0;display:grid;place-items:center;border-radius:999px}
+.selector-trigger,.selector-menu,.selector-item,.system-input,.text-field,.issue-input,.issue-text,.doc-page,.search-input,.editor-input,.editor-textarea{background:#fff;border:1px solid #7f8d95;border-radius:2px;color:#0f1418}
+.selector-trigger{width:100%;min-height:60px;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 16px;font-weight:800;font-size:1rem;cursor:pointer}.selector-trigger:hover{border-color:#6d818d}
+.selector-block.open .selector-caret{transform:rotate(180deg)}.selector-caret{transition:.2s}
+.selector-menu{display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:90;max-height:240px;overflow:auto}.selector-block.open .selector-menu{display:block}
+.selector-list{list-style:none;margin:0;padding:6px;display:grid;gap:0}.selector-item{width:100%;text-align:left;padding:13px 14px;cursor:pointer;font-weight:700;background:#f5f5f5}.selector-item:hover,.selector-item.active{background:#d8e7ef;color:#123e53}
+.process-count-card{padding:18px;display:grid;gap:12px}.process-count-card strong,.section-title, .panel-title{font-size:.82rem;font-weight:900;color:#114962;text-transform:uppercase;letter-spacing:.06em}.process-count-number{font-size:2.2rem;font-weight:900;color:#114962;text-align:center}
+.collapsible-section .collapse-content{display:block}.collapsible-section.collapsed .collapse-content{display:none}.collapse-title-trigger{display:inline-flex;align-items:center;gap:10px;cursor:pointer}.collapse-ind{width:28px;height:28px;display:grid;place-items:center;border:1px solid #83939c;background:#ececec;border-radius:2px}
+.card-head,.focus-head,.issues-head,.editor-head{padding:14px 16px;background:linear-gradient(180deg,#dbe2e6 0%,#c4ced5 100%);border-bottom:1px solid #8f9ba4}
+.block-content{padding:16px 18px 18px;background:#e5e5e5}
+.process-note{padding:10px 12px;border:1px solid #a2adb5;background:#eef2f4;color:#41505b;line-height:1.6;margin-bottom:12px}
+.search-shell{display:grid;gap:8px}.search-input{width:100%;min-height:38px;padding:8px 12px}.search-meta{font-size:.8rem;color:#5b6b76;font-weight:600}
+mark.hit{background:#fff07a;color:inherit;padding:0 .06em}
+.scroll-frame{overflow:auto;padding-right:6px}.scroll-frame.processes{height:292px}
+.scroll-frame::-webkit-scrollbar{width:12px;height:12px}.scroll-frame::-webkit-scrollbar-track{background:#dadada;border:1px solid #b8b8b8}.scroll-frame::-webkit-scrollbar-thumb{background:#a0aab1;border:1px solid #8d989f}
+.process-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;list-style:none;margin:0;padding:0}.process-item{width:100%;min-height:auto;display:flex;align-items:center;gap:10px;padding:7px 10px;border:1px solid #9aa5ad;border-radius:6px;background:linear-gradient(180deg,#f7f7f7 0%,#ececec 100%);cursor:pointer;text-align:left}
+.process-item:hover{background:linear-gradient(180deg,#fff 0%,#e8eef2 100%);border-color:#7f919c}.process-item.active{background:linear-gradient(180deg,#dfedf4 0%,#c9dde7 100%);border-color:#6f8b9a;color:#12384d}.process-item span{font-size:.9rem;line-height:1.22;font-weight:800;word-break:break-word}
+.no-results{grid-column:1/-1;padding:10px 12px;border:1px dashed #94a7b5;border-radius:6px;color:#5b6b76;background:#edf2f5}
+#processesCard{border-bottom-left-radius:0;border-bottom-right-radius:0}#summaryCard{margin-top:6px!important;border-top-left-radius:0;border-top-right-radius:0}
+.connected-flow-cluster{position:relative;padding:12px 14px 16px;border:1px solid #8f9ea8;background:linear-gradient(180deg,#d9dee1 0%,#d0d5d8 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.52),0 0 0 1px rgba(255,255,255,.24);margin-top:4px}.connected-flow-cluster::before,.connected-flow-cluster::after{content:"";position:absolute;top:12px;bottom:16px;width:1px;background:#a6b2b9;opacity:1;pointer-events:none}.connected-flow-cluster::before{left:14px}.connected-flow-cluster::after{right:14px}.connected-flow-part{position:relative;z-index:1}.connected-flow-part + .connected-flow-part{margin-top:8px;padding-top:10px}.connected-flow-part + .connected-flow-part::before{content:"";position:absolute;top:0;left:10px;right:10px;height:1px;background:#a6b2b9;pointer-events:none}.connected-flow-cluster #systemsSection{padding:0}.connected-flow-cluster #systemsSection>.card{margin:0;border-bottom-left-radius:0;border-bottom-right-radius:0}.connected-flow-cluster #processMapSection{padding-top:4px!important;margin-top:0}.connected-flow-cluster #processMapSection .section-head{margin-bottom:8px}.connected-flow-cluster #processesCard{border-bottom-left-radius:0;border-bottom-right-radius:0}.connected-flow-cluster #summaryCard{margin-top:0!important;border-top:0}.connected-flow-cluster #summaryCard .card-head{border-top:1px solid #a6b2b9}.connected-flow-cluster .focus-head,.connected-flow-cluster .card-head{background:linear-gradient(180deg,#dce3e7 0%,#c9d1d7 100%)}.connected-flow-cluster .card,.connected-flow-cluster .section-head{box-shadow:none}.connected-flow-cluster.cluster-collapsed-view{display:contents;padding:0;border:0;background:transparent;box-shadow:none;margin-top:0}.connected-flow-cluster.cluster-collapsed-view::before,.connected-flow-cluster.cluster-collapsed-view::after,.connected-flow-cluster.cluster-collapsed-view .connected-flow-part + .connected-flow-part::before{display:none}.connected-flow-cluster.cluster-collapsed-view .connected-flow-part + .connected-flow-part{margin-top:0;padding-top:0}.connected-flow-cluster.cluster-collapsed-view #processMapSection{padding-top:0!important;padding-left:0!important;padding-right:0!important;background:transparent!important;border:0!important;box-shadow:none!important}.connected-flow-cluster.cluster-collapsed-view #processMapSection .section-head{margin-bottom:0!important}
+.text-shell{display:grid;gap:8px}.text-tools{display:flex;gap:6px;justify-content:flex-end}.text-tool{min-width:32px;min-height:30px;padding:0 8px;border:1px solid #8ea0ac;border-radius:4px;background:#f7f7f7;cursor:pointer;font-weight:700;color:#234b63}
+.text-field,.issue-text,.editor-textarea{resize:none;overflow:hidden;word-break:break-word}.text-field{width:100%;min-height:170px;padding:16px 18px;line-height:1.7;color:#294269}.text-field:focus,.system-input:focus,.search-input:focus,.issue-input:focus,.issue-text:focus,.editor-input:focus,.editor-textarea:focus,.doc-page:focus{border-color:#4f7a90;box-shadow:0 0 0 1px #8db3c4;outline:none}
+.focus-strip{padding:0 0 14px}.systems-grid{display:grid;grid-template-columns:repeat(var(--cols,4),minmax(0,1fr));gap:0;background:#e4e4e4}.system-item{position:relative;padding:18px;border-left:1px solid #9aa5ad;min-height:96px;display:flex;align-items:center}.system-item:first-child{border-left:0}.system-input{width:100%;min-height:54px;padding:14px 42px 14px 16px;font-weight:700}.system-remove{position:absolute;top:10px;right:10px;width:24px;height:24px;padding:0;display:grid;place-items:center;font-size:.82rem;opacity:0;pointer-events:none;transition:.18s}.system-item:hover .system-remove,.system-item:focus-within .system-remove{opacity:1;pointer-events:auto}
+.stage-card{position:relative;min-height:100%;display:grid;grid-template-rows:auto 1fr;overflow:hidden;border:1px solid #8f9aa2;border-radius:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.22)}.stage-top,.modal-head{background:linear-gradient(180deg,#0ca2c8 0%,#087995 55%,#055f76 100%);color:#fff}.stage-top{padding:16px 18px 14px;min-height:126px;display:grid;align-content:start;position:relative;padding-right:50px;border-bottom:2px solid rgba(6,66,84,.35)}.stage-top::before{content:"";position:absolute;left:0;top:0;right:0;height:4px;background:rgba(255,255,255,.22)}.stage-top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:rgba(255,255,255,.18)}.stage-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px}.stage-id{display:grid;grid-template-columns:50px minmax(0,1fr);column-gap:13px;align-items:start}.stage-id>div{display:grid;gap:6px;align-content:start;padding-top:2px}.stage-id>div::before{content:"ETAPA OPERACIONAL";display:block;font-size:.68rem;line-height:1;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.82)}.step-badge{width:50px;height:50px;font-size:1.18rem;font-weight:900;border-radius:4px;display:grid;place-items:center;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.88);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 2px 8px rgba(0,0,0,.10)}
+.stage-title{font-size:1.22rem;line-height:1.08;word-break:break-word;font-weight:900;letter-spacing:.01em;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.16)}.stage-tools{display:flex;gap:6px;opacity:0;transition:.18s}.stage-card:hover .stage-tools,.stage-card:focus-within .stage-tools{opacity:1}.stage-body{padding:16px 14px 12px;min-height:268px;display:flex;flex-direction:column;background:#e7ecef}.stage-summary{flex:1;min-height:190px;color:#35434f;line-height:1.6;white-space:pre-wrap;word-break:break-word}.stage-actions{display:flex;justify-content:center;margin-top:auto;padding-top:12px}.stage-detail{min-width:100%;font-weight:800}.stage-remove{position:absolute;top:10px;right:10px;width:28px;height:28px;padding:0;display:grid;place-items:center;border-radius:4px;opacity:0;transition:.18s}.stage-card:hover .stage-remove,.stage-card:focus-within .stage-remove{opacity:1}
+#stepsGrid .stage-card:nth-child(4n+1) .stage-top{background:linear-gradient(180deg,#1298bb 0%,#0b7c98 58%,#075f76 100%)}
+#stepsGrid .stage-card:nth-child(4n+2) .stage-top{background:linear-gradient(180deg,#1b91b0 0%,#0d738f 58%,#095a6f 100%)}
+#stepsGrid .stage-card:nth-child(4n+3) .stage-top{background:linear-gradient(180deg,#0f87a6 0%,#0a6b86 58%,#074f64 100%)}
+#stepsGrid .stage-card:nth-child(4n+4) .stage-top{background:linear-gradient(180deg,#117f9a 0%,#0a657d 58%,#064b5f 100%)}
+#stepsGrid .stage-card:nth-child(4n+1) .stage-top::after{background:rgba(255,255,255,.19)}
+#stepsGrid .stage-card:nth-child(4n+2) .stage-top::after{background:rgba(214,235,243,.22)}
+#stepsGrid .stage-card:nth-child(4n+3) .stage-top::after{background:rgba(207,228,236,.22)}
+#stepsGrid .stage-card:nth-child(4n+4) .stage-top::after{background:rgba(202,223,231,.22)}
+.add-stage{border:0;background:transparent;padding:0;cursor:pointer}.add-stage-shell{min-height:228px;border:1px dashed #99acb8;border-radius:8px;background:rgba(255,255,255,.18);display:grid;place-items:center;transition:.18s}.add-stage:hover .add-stage-shell{background:rgba(255,255,255,.34)}.add-stage-plus{font-size:2rem;opacity:.12}.add-stage:hover .add-stage-plus{opacity:.9}
+.issues-card{overflow:hidden;position:relative}.issues-card.fullscreen{position:fixed;inset:16px;z-index:160;margin:0;border-radius:22px;box-shadow:0 24px 56px rgba(0,0,0,.25)}.backdrop{position:fixed;inset:0;background:rgba(40,48,54,.35);z-index:150}
+.issues-body{padding:18px;display:grid;gap:14px;background:#e5e5e5}.issues-stack,.analysis-stack{display:grid;gap:16px}
+.issue-create{display:grid;gap:14px;padding:14px 16px;border:1px solid #98a3ab;background:#e4e4e4}.issue-create-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.issue-create-field{display:grid;gap:8px}.issue-create-field label,.editor-field label,.dialog-title{font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:#114962}.issue-create-field select,.issue-create-option{border:1px solid #8f9ba4;background:#f7f7f7;color:#11181d;min-height:40px}.issue-create-field select{padding:10px 12px}.issue-create-options{display:grid;gap:8px}.issue-create-option{display:flex;align-items:center;gap:10px;padding:0 12px}
+.issue-card{position:relative;overflow:hidden;border:1px solid #c9d5df;border-radius:14px;box-shadow:0 10px 24px rgba(22,55,84,.07);background:linear-gradient(180deg,#fff 0%,#f8fbfd 100%)}.issue-card-head{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;padding:0;border-bottom:1px solid #d9e3ea}
+.issue-strip{position:absolute;inset:0 0 auto 0;height:12px;background:linear-gradient(90deg,#d9e6ef 0%,#eef4f8 100%)}.issue-card.mode-gargalo .issue-strip{background:linear-gradient(90deg,#dbaeb4 0%,#f4dde0 100%)}.issue-card.mode-impacto .issue-strip{background:linear-gradient(90deg,#c9b9aa 0%,#ebe3dc 100%)}
+.issue-card-main{display:grid;gap:10px;padding:22px 18px 16px}.scope-badge{display:inline-flex;align-items:center;justify-content:center;width:max-content;padding:4px 9px;border-radius:999px;font-size:.71rem;font-weight:900;letter-spacing:.05em;text-transform:uppercase}
+.scope-global{background:#e8edf2;color:#4c5f72;border:1px solid #c7d2db}.scope-process{background:#e3eef6;color:#2d5975;border:1px solid #bfd0dd}.scope-step{background:#eef3e4;color:#5b6a31;border:1px solid #d5dfbc}
+.issue-card-note{color:#4f5a63;line-height:1.45;font-size:.8rem;font-weight:700}.mode-badge{display:inline-flex;align-items:center;padding:5px 11px;border-radius:999px;font-size:.76rem;font-weight:900;letter-spacing:.05em;text-transform:uppercase}.mode-g{background:#f5e3e5;color:#8a2d37;border:1px solid #dbb8bc}.mode-i{background:#e7ded5;color:#625246;border:1px solid #cfbfb1}
+.issue-preview{display:grid;gap:8px;min-width:0}.issue-preview-text{margin:0;color:#324454;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+.issue-top-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap;padding:18px 18px 14px}.issue-tabs{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.issue-tab{min-width:112px;border-radius:999px;padding:8px 14px;min-height:36px;font-size:.76rem;font-weight:900;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;border:1px solid #7c8a93;background:#f7f7f7;transition:.18s}
+.issue-tab.warn{background:#f4d5da;color:#8a1f2d;border-color:#cf8c98}.issue-tab.impact{background:#d8c8bb;color:#4f3f34;border-color:#b69f8f}.issue-tab.active.warn{background:#c84a5f;color:#fff;border-color:#a43649;box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}.issue-tab.active.impact{background:#8a6f5d;color:#fff;border-color:#6f5848;box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+.issue-delete{min-width:112px;padding:8px 14px;border-radius:999px;background:#f1ecec;color:#7d3337;border:1px solid #d6c1c3;font-weight:900;text-transform:uppercase;letter-spacing:.04em}
+.issue-card-body{padding:18px;display:grid;gap:16px}.issue-panel{display:grid;gap:14px}.issue-panel.hidden{display:none!important}.issue-edit{display:grid;gap:8px}.issue-edit label{font-size:.76rem;font-weight:900;letter-spacing:.05em;text-transform:uppercase;color:#6c7c89}
+.issue-input,.issue-text{width:100%;padding:14px 16px;border:1px solid #ccd8e0;border-radius:12px;background:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.75)}.issue-input{min-height:54px;font-weight:700}.issue-text{min-height:150px;line-height:1.7}
+.issue-footer{display:flex;justify-content:flex-end;gap:10px;align-items:center;border-top:1px solid #e0e7ed;padding-top:14px}
+.empty-state,.analysis-note{padding:20px;border:1px dashed #c4d1dc;border-radius:12px;background:#f9fbfd;color:#5d6d7b;line-height:1.6}
+.editor-modal,.step-modal{position:relative}.modal-wrap{position:fixed;inset:0;background:rgba(40,48,54,.35);display:grid;place-items:center;padding:12px;z-index:180}
+.editor-dialog{width:min(860px,calc(100vw - 32px));max-height:calc(100vh - 32px);display:grid;grid-template-rows:auto 1fr auto;background:linear-gradient(180deg,#efefef 0%,#d9d9d9 100%);overflow:hidden}
+.editor-head{padding:14px 16px;border-bottom:1px solid #8a99a3;cursor:move}.editor-body{padding:16px;overflow:auto;display:grid;gap:14px;background:#e6e6e6}.editor-footer{padding:14px 16px;border-top:1px solid #8a99a3;background:#d7d7d7;display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.editor-meta{padding:12px 14px;border:1px solid #98a3ab;background:#f2f2f2;color:#4f5a63;line-height:1.55}.editor-hub,.editor-form,.editor-stage-list{display:grid;gap:12px}.editor-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.editor-field{display:grid;gap:8px}.editor-full{grid-column:1 / -1}
+.editor-shortcut,.editor-stage-btn{width:100%;border:1px solid #8f9ba4;background:#f7f7f7;color:#11181d;padding:12px 14px;text-align:left;cursor:pointer;font-weight:700}.editor-stage-btn small,.editor-shortcut small{display:block;color:#4f5a63;margin-top:4px;font-weight:600;line-height:1.45}
+.editor-input,.editor-textarea{width:100%;padding:12px 14px}.editor-textarea{min-height:120px;line-height:1.65}
+.step-dialog{width:min(1120px,calc(100vw - 24px));min-width:720px;height:calc(100vh - 24px);min-height:680px;max-height:calc(100vh - 24px);overflow:hidden;resize:both;position:relative}.step-dialog.fullscreen{position:fixed;left:12px;top:12px;width:calc(100vw - 24px);height:calc(100vh - 24px);max-width:none;max-height:none;min-width:0;min-height:0;resize:none;border-radius:18px;margin:0;transform:none;z-index:230}
+.modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:20px 22px 16px;cursor:move}.modal-main{display:grid;gap:8px}.modal-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.modal-head p,.modal-head .tag{color:#fff}.modal-close{position:absolute;top:14px;right:14px;z-index:5;width:30px;height:30px;padding:0;display:grid;place-items:center;border:1px solid rgba(255,255,255,.3);border-radius:4px;background:rgba(255,255,255,.92);color:#7a2b2b;cursor:pointer}
+.step-tabs{display:flex;gap:8px;padding:0 22px;background:#fff;border-bottom:1px solid var(--line);flex-wrap:wrap}.step-tab{border:0;background:transparent;color:var(--muted);font-weight:800;padding:14px 16px;cursor:pointer;border-bottom:3px solid transparent}.step-tab.active{background:linear-gradient(180deg,#eaf4f8 0%,#c7dae5 100%);border-bottom-color:#5f8296;color:#12384d}
+.step-body{padding:20px 22px 22px;display:block;height:calc(100% - 180px);min-height:0;overflow:hidden;background:#fff}.step-panel.hidden{display:none}.step-panel{display:block;height:100%;min-height:0}
+.doc-layout{display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:14px;min-height:100%;height:100%}.doc-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;border:1px solid #bccad4;border-radius:14px;background:linear-gradient(180deg,#edf3f7 0%,#dfe8ee 100%)}.doc-tool-group,.doc-tool-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.analysis-stack{display:grid;gap:16px;min-height:0;height:100%;max-height:none;overflow:auto;padding-right:6px;align-content:start}
+.doc-tool{min-height:34px;padding:7px 12px;border-radius:8px}.doc-upload{position:relative;overflow:hidden}.doc-upload input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.doc-note{padding:12px 14px;border:1px solid #d4dde5;border-radius:12px;background:#f7fbfe;color:#35506a;line-height:1.6}.doc-canvas{padding:18px;border:1px solid #c7d3dc;border-radius:18px;background:linear-gradient(180deg,#e7eef3 0%,#dde6ec 100%);min-height:0;height:100%;overflow:auto}
+.doc-page{width:100%;max-width:860px;min-height:860px;margin:0 auto;padding:44px 52px;background:#fff;border:1px solid #c7d3dc;box-shadow:0 18px 36px rgba(34,58,76,.10);outline:none;color:#22384d;line-height:1.8;font-size:1rem;overflow-wrap:anywhere}
+.doc-page h1,.doc-page h2,.doc-page h3{color:#163f5f;margin:0 0 12px;line-height:1.25}.doc-page h1{font-size:2rem}.doc-page h2{font-size:1.35rem;margin-top:22px}.doc-page h3{font-size:1.08rem;margin-top:18px}.doc-page p,.doc-page ul,.doc-page ol{margin:0 0 14px}.doc-page ul,.doc-page ol{padding-left:28px}.doc-page img{max-width:100%;height:auto;display:block;margin:16px auto;border:1px solid #c7d3dc;border-radius:10px;background:#fff}.doc-page .lg{font-size:1.15em;line-height:1.7;display:inline}
+.save-bar{position:fixed;left:50%;top:50%;z-index:260;width:min(520px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;padding:14px 16px;display:grid;gap:10px;background:linear-gradient(180deg,#efefef 0%,#d9d9d9 100%);transform:translate(-50%,-50%)}.save-copy{display:grid;gap:4px;color:#4f5a63;line-height:1.5;font-size:.9rem}
+.toast{position:fixed;top:86px;right:18px;z-index:280;min-width:300px;max-width:420px;padding:12px 14px;display:grid;gap:4px;background:linear-gradient(180deg,#eef3f6 0%,#d8e0e5 100%)}
+.dialog{width:min(520px,100%);padding:18px;display:grid;gap:14px;background:linear-gradient(180deg,#f1f1f1 0%,#dfdfdf 100%);position:relative}.dialog-title{cursor:move}.dialog-copy{color:#4f5a63;line-height:1.55;font-size:.9rem}
+.dialog-field{display:grid;gap:8px}.dialog-field input{width:100%;min-height:42px;border:1px solid #8f9ba4;background:#f7f7f7;color:#11181d;padding:10px 12px;outline:none}
+.app-sidebar{position:fixed;left:0;top:0;bottom:0;width:248px;background:#d6dadd;border-right:1px solid #8ea0ac;padding:18px 16px 20px;display:grid;grid-template-rows:auto 1fr auto;gap:18px;z-index:80;box-shadow:inset -1px 0 0 rgba(255,255,255,.55);transition:transform .22s ease,opacity .18s ease}
+body.has-sidebar:not(.sidebar-collapsed) .topbar,body.has-sidebar:not(.sidebar-collapsed) main,body.has-sidebar:not(.sidebar-collapsed) .site-footer{margin-left:248px}body.has-sidebar:not(.sidebar-collapsed) .topbar{width:calc(100% - 248px)}body.sidebar-collapsed .app-sidebar{transform:translateX(calc(-100% - 8px));opacity:0;pointer-events:none}
+.app-sidebar-brand{display:grid;gap:4px;padding:6px 4px 14px;border-bottom:1px solid #aab8c2;color:#194c68}.app-sidebar-brand strong{font-size:1.12rem}.app-sidebar-brand span{font-size:.84rem;color:#5f6f7a}
+.app-sidebar-nav{display:grid;gap:8px;align-content:start}.app-sidebar-nav a{display:block;padding:10px 12px;border:1px solid #90a3af;background:#edf1f3;color:#184f7d;font-weight:700;border-radius:4px}.app-sidebar-nav a:hover{background:#dfe8ee}
+.app-sidebar-actions{display:grid;gap:8px}.sidebar-btn{width:100%;justify-content:center;border-radius:4px;font-weight:700}.sidebar-toggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:4px;min-width:116px;font-weight:800}
+.site-footer{margin-top:170px;padding:0 0 64px;background:transparent}.site-footer .container{display:grid;justify-items:center;gap:8px;text-align:center;color:#5f6c75;font-weight:400}.site-footer-copy{font-weight:400;font-size:.84rem;opacity:.8}.site-footer-logo{width:min(96px,18vw);opacity:.72;height:auto;display:block}.presentation-mode #openEditorBtn,.presentation-mode .structure-only,.presentation-mode .presentation-hide,.presentation-mode .text-tools,.presentation-mode .doc-toolbar,.presentation-mode .issue-footer,.presentation-mode .system-remove,.presentation-mode .stage-remove,.presentation-mode .stage-tools,.presentation-mode #addStepBtn,.presentation-mode #openCreateCardBtn,.presentation-mode #cancelCreateCardBtn,.presentation-mode #createCardBtn,.presentation-mode [data-global-save],.presentation-mode [data-global-discard],.presentation-mode #addSectorBtn,.presentation-mode #renameSectorBtn,.presentation-mode #removeSectorBtn{display:none!important}.presentation-mode .text-field,.presentation-mode .system-input,.presentation-mode .issue-input,.presentation-mode .issue-text,.presentation-mode .editor-input,.presentation-mode .editor-textarea{background:#f3f6f9!important;color:#5f6c75!important;box-shadow:none!important}.presentation-mode .doc-page{background:#f8fafb!important;color:#5a6a78!important;box-shadow:none!important}.presentation-mode .issue-input,.presentation-mode .issue-text,.presentation-mode .system-input,.presentation-mode .text-field{cursor:default}
+.launch{position:fixed;inset:0;z-index:400;background:linear-gradient(180deg,#d8e1e1 0%,#d2dddd 26%,#c8d4d4 64%,#becbcb 100%);display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity .42s ease,visibility .42s ease}.launch.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.launch-inner{position:relative;display:grid;place-items:center;width:min(86vw,720px);min-height:min(60vh,520px);padding:28px}.launch-spinner,.launch-logo{display:grid;justify-items:center;gap:16px;transition:opacity .34s ease,transform .34s ease}.launch-logo{position:absolute;inset:0;display:grid;place-items:center;opacity:0;transform:scale(.965);pointer-events:none}.launch.show-logo .launch-spinner{opacity:0;transform:translateY(-10px) scale(.96);pointer-events:none}.launch.show-logo .launch-logo{opacity:1;transform:scale(1)}
+.launch-ring{width:72px;height:72px;border-radius:50%;border:4px solid rgba(20,77,108,.14);border-top-color:#1d6f9b;border-right-color:#3ea2ad;box-shadow:0 0 0 1px rgba(255,255,255,.55) inset}.launch.waiting .launch-ring{animation:spin 1s linear infinite}.launch.seq .launch-ring{animation:spin2 .72s linear 2}
+.launch-label{font-size:.92rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#2b536f}.launch-hint{font-size:.8rem;color:#5f7481}.launch-img{display:block;width:min(66vw,520px);max-width:520px;height:auto;opacity:1;filter:drop-shadow(0 0 .8px rgba(18,89,113,.28)) drop-shadow(0 8px 18px rgba(17,65,94,.10))}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes spin2{to{transform:rotate(720deg)}}
+@media (max-width:1100px){.hero-layout{flex-direction:column}.hero-main{border-right:0;border-bottom:1px solid var(--line)}.process-list{grid-template-columns:repeat(2,minmax(0,1fr))}.step-dialog{min-width:0;width:100%}}
+@media (max-width:980px){body.has-sidebar .topbar,body.has-sidebar main,body.has-sidebar .site-footer{margin-left:0!important}body.has-sidebar .topbar{width:100%!important}.app-sidebar{position:static;width:auto;height:auto;grid-template-columns:1fr;grid-template-rows:auto;box-shadow:none;border-right:0;border-bottom:1px solid #8ea0ac;transform:none!important;opacity:1!important;pointer-events:auto!important}.sidebar-toggle{display:none!important}}
+@media (max-width:860px){.issue-card-head{grid-template-columns:1fr}.issue-top-actions{justify-content:flex-start}.issue-tabs{justify-content:flex-start}}
+@media (max-width:820px){.topbar-inner,.section-head,.card-head,.hero-layout,.focus-head,.issues-head,.editor-head{flex-direction:column;align-items:flex-start}.g4,.process-list,.systems-grid{grid-template-columns:1fr!important}.step-dialog,.step-dialog.fullscreen{width:100%;height:calc(100vh - 24px);min-width:0;min-height:0;resize:none}.step-body{height:calc(100% - 190px);max-height:none;padding:16px;overflow:hidden}.modal-head{flex-direction:column;align-items:flex-start}.save-bar{width:calc(100vw - 24px)}.toast{left:12px;right:12px;width:auto}.issue-create-grid,.editor-grid{grid-template-columns:1fr}}
+
+/* === Ajuste visual v12: redesign sem alterar funcionalidades === */
+.section-head{
+  padding:18px 20px 15px;
+  border:1px solid #98a6af;
+  background:linear-gradient(180deg,#dbe2e6 0%,#d2d9dd 54%,#c8d0d5 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.72),0 1px 0 rgba(255,255,255,.22);
+  position:relative;
+  overflow:hidden;
+}
+.section-head::before{
+  content:"";
+  position:absolute;
+  left:0;right:0;top:0;
+  height:3px;
+  background:linear-gradient(90deg,#0a93b8 0%,#0e84a3 52%,#0b6f8a 100%);
+  opacity:.92;
+}
+.section-head > div{position:relative;z-index:1;}
+.card,.dialog,.process-count-card{
+  background:linear-gradient(180deg,#efefef 0%,#e7eaec 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.62),0 1px 0 rgba(255,255,255,.16);
+}
+.card-head,.focus-head,.issues-head,.editor-head{
+  padding:15px 18px;
+  background:linear-gradient(180deg,#e2e8ec 0%,#d5dde2 52%,#c9d1d6 100%);
+  border-bottom:1px solid #8f9aa3;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.74);
+}
+.card-head h3,.focus-head strong,.issues-head strong{
+  color:#143f56;
+  letter-spacing:-.01em;
+}
+.process-note{
+  padding:14px 14px 12px;
+  border:1px solid #a5b1b8;
+  background:linear-gradient(180deg,#eef3f5 0%,#e7edef 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.62);
+}
+.search-input,.system-input,.text-field,.issue-input,.issue-text,.editor-input,.editor-textarea,.selector-trigger,.selector-menu,.selector-item,.doc-page{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
+}
+.process-list{gap:10px;}
+.process-item{
+  min-height:40px;
+  padding:10px 12px;
+  border-color:#8e9ca5;
+  background:linear-gradient(180deg,#f7f8f8 0%,#edf0f2 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.78);
+}
+.process-item:hover{
+  background:linear-gradient(180deg,#ffffff 0%,#eef4f7 100%);
+}
+.process-item.active{
+  background:linear-gradient(180deg,#dfeaf1 0%,#c7dbe7 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.82),0 0 0 1px rgba(10,147,184,.10);
+}
+.text-shell{
+  border:1px solid #9ba8b1;
+  background:linear-gradient(180deg,#eef2f4 0%,#e7ebed 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.65);
+  padding:14px;
+}
+.text-field{
+  min-height:196px;
+  padding:16px 18px;
+  line-height:1.72;
+}
+.systems-grid{
+  background:linear-gradient(180deg,#e8ecee 0%,#dfe4e7 100%);
+}
+.system-input{
+  min-height:56px;
+  padding:13px 16px;
+  font-weight:800;
+  color:#42515b;
+}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view){
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  padding:18px 18px 20px;
+  border:1px solid #8f9ea8;
+  background:linear-gradient(180deg,#d8dde0 0%,#d1d7da 48%,#c9d0d3 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 1px 0 rgba(255,255,255,.2);
+}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view)::before,
+#processos .connected-flow-cluster:not(.cluster-collapsed-view)::after,
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) .connected-flow-part + .connected-flow-part::before{
+  display:none;
+}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) #processMapSection{order:1;}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) #systemsSection{order:2;padding:0;margin-top:12px;}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) .connected-flow-part + .connected-flow-part{
+  margin-top:12px;
+  padding-top:0;
+}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) #processMapSection .section-head{
+  margin-bottom:10px;
+}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) #processesCard{
+  border-bottom-left-radius:0;
+  border-bottom-right-radius:0;
+}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) #summaryCard{
+  margin-top:0 !important;
+  border-top:0;
+}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) #summaryCard .card-head{
+  border-top:1px solid #a3aeb6;
+}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) #systemsSection > .card{
+  margin:0;
+  border-top:0;
+  border-top-left-radius:0;
+  border-top-right-radius:0;
+  background:linear-gradient(180deg,#ebeff1 0%,#e2e7e9 100%);
+  position:relative;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.68),0 1px 0 rgba(255,255,255,.16);
+}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) #systemsSection > .card::before{
+  content:"";
+  position:absolute;
+  left:22px;
+  right:22px;
+  top:0;
+  height:3px;
+  background:linear-gradient(90deg,#0a93b8 0%,#0f83a0 48%,#0b6e88 100%);
+  opacity:.9;
+}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) #systemsSection > .card::after{
+  content:"";
+  position:absolute;
+  top:-12px;
+  left:34px;
+  width:2px;
+  height:12px;
+  background:#97a7b1;
+  box-shadow:0 0 0 1px rgba(255,255,255,.34);
+}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) .focus-head,
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) .card-head{
+  background:linear-gradient(180deg,#e1e7eb 0%,#d3dbe0 52%,#c8d0d5 100%);
+}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) #systemsSection .focus-head strong{
+  position:relative;
+  padding-left:14px;
+}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) #systemsSection .focus-head strong::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:50%;
+  width:8px;
+  height:8px;
+  margin-top:-4px;
+  background:#0c88a7;
+}
+.stage-card{
+  background:linear-gradient(180deg,#f0f3f5 0%,#e6ebee 100%);
+  border-color:#8897a0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 1px 0 rgba(255,255,255,.18);
+}
+.stage-top{
+  min-height:134px;
+  padding:18px 20px 16px;
+  border-bottom:1px solid rgba(6,66,84,.42);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18);
+}
+.stage-id>div::before{
+  color:rgba(255,255,255,.88);
+  letter-spacing:.14em;
+}
+.stage-title{
+  font-size:1.28rem;
+  line-height:1.02;
+  text-shadow:0 1px 0 rgba(0,0,0,.18),0 0 12px rgba(255,255,255,.06);
+}
+.stage-body{
+  background:linear-gradient(180deg,#e8edef 0%,#e2e8eb 100%);
+  padding:18px 16px 14px;
+}
+.stage-summary{
+  line-height:1.68;
+  color:#33424d;
+}
+.stage-detail{
+  min-height:42px;
+  letter-spacing:.01em;
+}
+.issue-card{
+  border-radius:10px;
+  border-color:#bdccd6;
+  background:linear-gradient(180deg,#ffffff 0%,#f5f9fb 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.78),0 8px 18px rgba(21,53,79,.05);
+}
+.issue-card-head{
+  border-bottom-color:#d3dde4;
+}
+.issue-card-main{
+  padding:20px 18px 16px;
+}
+.scope-badge,.mode-badge{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55);
+}
+.doc-toolbar{
+  border-radius:10px;
+  background:linear-gradient(180deg,#edf3f7 0%,#dce5ea 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.78);
+}
+.doc-canvas{
+  border-radius:10px;
+  background:linear-gradient(180deg,#e7edf1 0%,#d9e1e7 100%);
+}
+.doc-page{
+  border-color:#b8c6d0;
+  box-shadow:0 16px 34px rgba(34,58,76,.09);
+}
+@media (max-width:980px){
+  #processos .connected-flow-cluster:not(.cluster-collapsed-view){padding:14px 14px 16px;}
+}
+@media (max-width:820px){
+  .section-head{padding:16px 16px 14px;}
+  #processos .connected-flow-cluster:not(.cluster-collapsed-view) #systemsSection > .card::after{display:none;}
+}
+
+
+/* === Redesign visual Microsoft / Fluent (sem alterar funcionalidade) === */
+:root{
+  --bg:#f3f5f7;
+  --card:#ffffff;
+  --soft:#f7f9fb;
+  --text:#1b1b1b;
+  --muted:#5e6670;
+  --line:#d6dce3;
+  --line-strong:#c8d0d8;
+  --primary:#0f6cbd;
+  --primary-dark:#0a5aa3;
+  --primary-soft:#edf6fd;
+  --primary-border:#bfd7ef;
+  --danger:#fdebec;
+  --danger-text:#c42b1c;
+  --success:#107c10;
+  --success-soft:#ecf6ec;
+  --shadow:0 8px 24px rgba(27,27,27,.08);
+  --shadow-soft:0 4px 14px rgba(27,27,27,.06);
+}
+body,button,input,textarea,select{
+  font-family:"Segoe UI",Inter,Arial,sans-serif !important;
+  color:var(--text);
+}
+html,body{
+  background:linear-gradient(180deg,#f7f8fa 0%,#f2f4f7 38%,#edf1f4 100%) !important;
+}
+body{
+  background-image:none !important;
+}
+.topbar{
+  background:rgba(255,255,255,.94) !important;
+  border-bottom:1px solid var(--line) !important;
+  box-shadow:0 4px 18px rgba(15,108,189,.06) !important;
+  backdrop-filter:blur(10px);
+}
+.topbar .brand,.topbar .brand small,.topbar .nav a{
+  color:#16324f !important;
+}
+.topbar .nav a{
+  border-radius:10px !important;
+}
+.topbar .nav a:hover{
+  background:#edf6fd !important;
+  color:var(--primary-dark) !important;
+  border-color:transparent !important;
+}
+.brand-mark{
+  border-radius:14px !important;
+  box-shadow:0 8px 18px rgba(15,108,189,.14) !important;
+  background:linear-gradient(180deg,#1784d7 0%,#0f6cbd 55%,#0a5aa3 100%) !important;
+}
+.app-sidebar{
+  background:rgba(255,255,255,.92) !important;
+  border-right:1px solid var(--line) !important;
+  box-shadow:8px 0 24px rgba(27,27,27,.04) !important;
+  backdrop-filter:blur(14px);
+}
+.app-sidebar-brand{
+  color:#16324f !important;
+  border-bottom:1px solid #e3e8ed !important;
+}
+.app-sidebar-brand span{
+  color:#66727f !important;
+}
+.app-sidebar-nav a{
+  border:1px solid #e3e8ed !important;
+  background:#fff !important;
+  color:#17324d !important;
+  border-radius:12px !important;
+  box-shadow:0 1px 0 rgba(255,255,255,.8) inset;
+}
+.app-sidebar-nav a:hover{
+  background:#f4f9fe !important;
+  border-color:#c6dbef !important;
+}
+.btn,.icon-btn,.doc-tool{
+  border:1px solid #d3dae2 !important;
+  border-radius:10px !important;
+  background:#fff !important;
+  color:#1b1b1b !important;
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset, 0 2px 8px rgba(27,27,27,.05) !important;
+  text-shadow:none !important;
+  transition:.18s ease !important;
+}
+.btn:hover,.icon-btn:hover,.doc-tool:hover{
+  background:#f7f9fb !important;
+  border-color:#c5d6e7 !important;
+  transform:translateY(-1px);
+}
+.btn.danger,.icon-btn.danger{
+  background:#fff5f5 !important;
+  color:#c42b1c !important;
+  border-color:#efc6c3 !important;
+}
+.btn.save-accent{
+  background:#0f6cbd !important;
+  color:#fff !important;
+  border-color:#0a5aa3 !important;
+}
+.btn.save-accent:hover{
+  background:#0a5aa3 !important;
+}
+.btn.discard-accent{
+  background:#ffffff !important;
+  color:#c42b1c !important;
+  border-color:#efc6c3 !important;
+}
+.btn.discard-accent:hover{
+  background:#fff5f5 !important;
+}
+.hero-card,.card,.dialog,.process-count-card,.step-dialog,.editor-dialog,.issues-card{
+  background:rgba(255,255,255,.88) !important;
+  border:1px solid var(--line) !important;
+  border-radius:16px !important;
+  box-shadow:var(--shadow-soft) !important;
+  overflow:hidden;
+}
+.hero-main{
+  background:linear-gradient(180deg,#ffffff 0%,#f8fbfe 100%) !important;
+  border-right:1px solid #e4ebf2 !important;
+}
+.hero-side{
+  background:linear-gradient(180deg,#f7fafc 0%,#f0f5f8 100%) !important;
+}
+.eyebrow,.tag{
+  border-radius:999px !important;
+  background:#eef6fd !important;
+  color:var(--primary-dark) !important;
+  border:1px solid #d4e4f2 !important;
+}
+.hero-note,.process-note,.analysis-note,.empty-state{
+  border-radius:14px !important;
+  background:linear-gradient(180deg,#f8fbfe 0%,#f0f6fb 100%) !important;
+  border:1px solid #d9e7f2 !important;
+  box-shadow:none !important;
+}
+.selector-trigger,.selector-menu,.selector-item,.system-input,.text-field,.issue-input,.issue-text,.editor-input,.editor-textarea,.search-input,.doc-page{
+  border:1px solid #d6dde5 !important;
+  border-radius:12px !important;
+  background:#fff !important;
+  box-shadow:0 1px 0 rgba(255,255,255,.82) inset !important;
+}
+.selector-item{
+  background:#fff !important;
+}
+.selector-item:hover,.selector-item.active{
+  background:#f2f8fd !important;
+  color:var(--primary-dark) !important;
+}
+.section-head{
+  border:1px solid #d9e1e8 !important;
+  border-radius:18px !important;
+  background:linear-gradient(180deg,#ffffff 0%,#f6f9fc 100%) !important;
+  box-shadow:var(--shadow-soft) !important;
+  padding:18px 22px 16px !important;
+}
+.section-head::before{
+  height:4px !important;
+  background:linear-gradient(90deg,#0f6cbd 0%,#2388dd 45%,#6cb8f1 100%) !important;
+}
+.kicker,.selector-label,.process-count-card strong{
+  color:#1e4c74 !important;
+}
+h2{
+  color:#14324c !important;
+  font-size:clamp(1.55rem,3vw,2.15rem) !important;
+}
+.muted,.process-count-text,.issue-card-note,.search-meta,.hero-main p,.section-head p{
+  color:#697684 !important;
+}
+.block-content{
+  background:transparent !important;
+  padding:18px 20px 22px !important;
+}
+.card-head,.focus-head,.issues-head,.editor-head{
+  background:linear-gradient(180deg,#ffffff 0%,#f7fafc 100%) !important;
+  border-bottom:1px solid #e4ebf1 !important;
+  padding:16px 20px !important;
+}
+.card-head h3,.focus-head strong,.issues-head strong{
+  color:#17324d !important;
+}
+.process-list{
+  gap:12px !important;
+}
+.process-item{
+  min-height:46px !important;
+  padding:12px 14px !important;
+  border-radius:12px !important;
+  border:1px solid #d8e0e8 !important;
+  background:linear-gradient(180deg,#ffffff 0%,#f8fbfd 100%) !important;
+  box-shadow:0 4px 12px rgba(27,27,27,.04) !important;
+}
+.process-item:hover{
+  background:linear-gradient(180deg,#ffffff 0%,#f0f7fd 100%) !important;
+  border-color:#bfd7ef !important;
+}
+.process-item.active{
+  background:linear-gradient(180deg,#eef6fd 0%,#deedf9 100%) !important;
+  border-color:#a8c9e6 !important;
+  color:#0e507f !important;
+  box-shadow:0 6px 14px rgba(15,108,189,.10) !important;
+}
+.text-shell{
+  border-radius:14px !important;
+  border:1px solid #e1e7ed !important;
+  background:#fff !important;
+  box-shadow:var(--shadow-soft) !important;
+}
+.text-field{
+  min-height:210px !important;
+  border-radius:12px !important;
+}
+.systems-grid{
+  background:linear-gradient(180deg,#f9fbfc 0%,#f1f5f8 100%) !important;
+}
+.system-item{
+  border-left:1px solid #e3e9ef !important;
+  min-height:102px !important;
+}
+.system-input{
+  min-height:58px !important;
+  border-radius:12px !important;
+  font-weight:700 !important;
+  color:#42515b !important;
+}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view){
+  background:linear-gradient(180deg,#ffffff 0%,#f7f9fc 100%) !important;
+  border:1px solid #d9e1e8 !important;
+  border-radius:18px !important;
+  box-shadow:var(--shadow-soft) !important;
+  padding:18px 20px 20px !important;
+}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) #systemsSection > .card{
+  border-top:0 !important;
+  border-top-left-radius:0 !important;
+  border-top-right-radius:0 !important;
+  background:linear-gradient(180deg,#ffffff 0%,#f6f9fb 100%) !important;
+  box-shadow:var(--shadow-soft) !important;
+}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) #systemsSection > .card::before{
+  height:4px !important;
+  background:linear-gradient(90deg,#0f6cbd 0%,#2388dd 45%,#6cb8f1 100%) !important;
+}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) #systemsSection > .card::after{
+  background:#c6d3df !important;
+  box-shadow:none !important;
+}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) .focus-head,
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) .card-head{
+  background:linear-gradient(180deg,#ffffff 0%,#f7fafd 100%) !important;
+}
+.stage-card{
+  border-radius:16px !important;
+  overflow:hidden !important;
+  border:1px solid #d5dce4 !important;
+  background:linear-gradient(180deg,#ffffff 0%,#f6f9fb 100%) !important;
+  box-shadow:var(--shadow-soft) !important;
+}
+.stage-top{
+  min-height:136px !important;
+  padding:18px 20px 16px !important;
+  border-bottom:1px solid rgba(12,48,83,.10) !important;
+  box-shadow:none !important;
+}
+#stepsGrid .stage-card:nth-child(4n+1) .stage-top{
+  background:linear-gradient(180deg,#177ddc 0%,#0f6cbd 58%,#0b5799 100%) !important;
+}
+#stepsGrid .stage-card:nth-child(4n+2) .stage-top{
+  background:linear-gradient(180deg,#0f6cbd 0%,#0a5fa8 58%,#094d8a 100%) !important;
+}
+#stepsGrid .stage-card:nth-child(4n+3) .stage-top{
+  background:linear-gradient(180deg,#1d7bd1 0%,#1164ad 58%,#0b4f88 100%) !important;
+}
+#stepsGrid .stage-card:nth-child(4n+4) .stage-top{
+  background:linear-gradient(180deg,#2c88df 0%,#146ab9 58%,#0b558f 100%) !important;
+}
+.stage-id>div::before{
+  color:rgba(255,255,255,.90) !important;
+}
+.step-badge{
+  border-radius:12px !important;
+  background:rgba(255,255,255,.16) !important;
+  border:1px solid rgba(255,255,255,.82) !important;
+  box-shadow:0 6px 16px rgba(0,0,0,.14) !important;
+}
+.stage-title{
+  font-size:1.24rem !important;
+  letter-spacing:0 !important;
+  text-shadow:0 1px 0 rgba(0,0,0,.18) !important;
+}
+.stage-body{
+  background:linear-gradient(180deg,#ffffff 0%,#f5f8fa 100%) !important;
+  padding:18px 16px 14px !important;
+}
+.stage-summary{
+  color:#41515d !important;
+}
+.stage-detail{
+  min-height:42px !important;
+}
+.issue-card{
+  border-radius:16px !important;
+  border:1px solid #dbe3ea !important;
+  background:linear-gradient(180deg,#ffffff 0%,#f8fbfd 100%) !important;
+  box-shadow:var(--shadow-soft) !important;
+}
+.issue-card-head{
+  border-bottom:1px solid #e4ebf1 !important;
+}
+.issue-card-main{
+  padding:22px 18px 16px !important;
+}
+.issue-input,.issue-text{
+  border-radius:12px !important;
+}
+.issue-tab{
+  border-radius:999px !important;
+}
+.doc-toolbar{
+  border-radius:14px !important;
+  border:1px solid #dbe3ea !important;
+  background:linear-gradient(180deg,#ffffff 0%,#f5f8fb 100%) !important;
+  box-shadow:var(--shadow-soft) !important;
+}
+.doc-canvas{
+  border-radius:16px !important;
+  border:1px solid #dbe3ea !important;
+  background:linear-gradient(180deg,#f3f7fa 0%,#eef3f7 100%) !important;
+}
+.doc-page{
+  border-radius:10px !important;
+  border:1px solid #d7dee6 !important;
+  box-shadow:0 14px 34px rgba(27,27,27,.08) !important;
+}
+.editor-dialog,.step-dialog,.dialog{
+  border-radius:18px !important;
+}
+@media (max-width:980px){
+  #processos .connected-flow-cluster:not(.cluster-collapsed-view){
+    padding:16px 16px 18px !important;
+  }
+}
+
+
+/* === Ajuste v16: remover camada externa do primeiro bloco === */
+#processos .connected-flow-cluster:not(.cluster-collapsed-view){
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  padding:0 !important;
+}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) #processMapSection{
+  margin-top:0 !important;
+  padding-top:0 !important;
+}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) #processMapSection .section-head{
+  margin-bottom:18px !important;
+}
+#processos .connected-flow-cluster:not(.cluster-collapsed-view) #systemsSection{
+  margin-top:16px !important;
+}
+
+</style>
+</head>
+<body class="has-sidebar sidebar-collapsed">
+<aside class="app-sidebar" id="sidebar">
+  <div class="app-sidebar-brand"><strong>Mapeamento</strong><span>Painel de processos</span></div>
+  <nav class="app-sidebar-nav">
+    <a href="#heroAnchor">Visão geral</a>
+    <a href="#processos">Processos</a>
+    <a href="#stepsSection">Etapas</a>
+    <a href="#issuesSection">Leitura crítica</a>
+  </nav>
+  <div class="app-sidebar-actions">
+    <button class="btn sidebar-btn" id="toggleStructureBtn" type="button">Liberar edição</button>
+    <button class="btn sidebar-btn" id="openEditorBtn" type="button">Central de edição</button>
+  </div>
+</aside>
+
+<header class="topbar">
+  <div class="container topbar-inner">
+    <div class="brand"><div class="brand-mark"></div><div><div>Mapeamento de Processos</div><small>Leitura operacional por setor, processo, etapas e impactos</small></div></div>
+    <nav class="nav">
+      <button class="btn small sidebar-toggle" id="toggleSidebarBtn" type="button"><span>☰</span><span id="toggleSidebarLabel">Menu</span></button>
+      <a href="#processos">Mapa do processo</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="hero" id="heroAnchor">
+  <div class="container">
+    <div class="hero-card card">
+      <div class="hero-layout">
+        <div class="hero-main">
+          <div class="eyebrow" id="heroEyebrow"></div>
+          <h1 id="heroTitle"></h1>
+          <p id="heroDescription"></p>
+          <div class="hero-note">Esta página foi organizada para que a leitura principal seja sempre o <strong>processo selecionado</strong>, seu fluxo operacional e seus pontos críticos.</div>
+          <div><button class="btn small hidden" id="editHeroBtn" type="button">Editar seção</button></div>
+        </div>
+        <div class="hero-side">
+          <div class="selector-block" id="sectorBlock">
+            <div class="selector-head">
+              <div class="selector-label">Selecionar setor</div>
+              <div class="selector-tools">
+                <button class="icon-btn selector-tool" id="addSectorBtn" type="button">+</button>
+                <button class="icon-btn selector-tool" id="renameSectorBtn" type="button">✎</button>
+                <button class="icon-btn selector-tool danger" id="removeSectorBtn" type="button">×</button>
+              </div>
+            </div>
+            <button class="selector-trigger" id="sectorTrigger" type="button" aria-expanded="false"><span id="sectorCurrentLabel"></span><span class="selector-caret">⌄</span></button>
+            <div class="selector-menu"><ul class="selector-list" id="sectorList"></ul></div>
+          </div>
+          <div class="process-count-card card">
+            <strong>Quantidade de processos cadastrados no setor escolhido</strong>
+            <div class="process-count-number" id="processCountValue">00</div>
+            <div class="muted" id="processCountText"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="processos">
+  <div class="container">
+    <div class="connected-flow-cluster cluster-collapsed-view" id="connectedFlowCluster">
+      <section class="focus-strip hidden connected-flow-part" id="systemsSection">
+        <div class="card">
+          <div class="focus-head">
+            <strong>Sistema Utilizado</strong>
+            <div class="focus-head-actions">
+              <div class="section-actions">
+                <button class="btn small discard-accent" data-global-discard type="button">Descartar</button>
+                <button class="btn small save-accent" data-global-save type="button">Salvar</button>
+              </div>
+              <button class="icon-btn" id="addSystemBtn" type="button">+</button>
+            </div>
+          </div>
+          <div class="systems-grid" id="systemsGrid"></div>
+        </div>
+      </section>
+
+      <div class="section collapsible-section connected-flow-part" id="processMapSection" style="padding-top:0">
+      <div class="section-head">
+        <div>
+          <div class="kicker">Mapa principal</div>
+          <div class="collapse-title-trigger" data-collapse="processMap" tabindex="0" role="button"><h2>Processos</h2><span class="collapse-ind" data-collapse-ind="processMap">+</span></div>
+          <p class="muted">Clique em um processo para trocar automaticamente as etapas e exibir o bloco de sistema utilizado somente após clique manual.</p>
+        </div>
+      </div>
+      <div class="collapse-content">
+        <section class="card" id="processesCard">
+          <div class="card-head">
+            <div><h3>Processos cadastrados</h3><p id="processIntro"></p></div>
+            <div class="section-actions">
+              <button class="btn small hidden" id="editProcessIntroBtn" type="button">Editar texto</button>
+              <button class="btn small hidden structure-only" id="addProcessBtn" type="button">Incluir</button>
+              <button class="btn small hidden structure-only" id="renameProcessBtn" type="button">Editar</button>
+              <button class="btn small danger hidden structure-only" id="removeProcessBtn" type="button">Excluir</button>
+            </div>
+          </div>
+          <div class="block-content">
+            <div class="process-note" id="searchHost"></div>
+            <div class="scroll-frame processes"><ul class="process-list" id="processList"></ul></div>
+          </div>
+        </section>
+
+        <section class="card" id="summaryCard" style="margin-top:18px">
+          <div class="card-head">
+            <div><h3>Resumo do processo</h3><p class="muted">Use este campo para escrever livremente o resumo do processo em texto corrido.</p></div>
+            <div class="section-actions">
+              <button class="btn small discard-accent" data-global-discard type="button">Descartar</button>
+              <button class="btn small save-accent" data-global-save type="button">Salvar</button>
+            </div>
+          </div>
+          <div class="block-content">
+            <div class="text-shell">
+              <div class="text-tools" id="summaryTools"></div>
+              <textarea class="text-field" id="processSummaryField" placeholder="Digite aqui o resumo do processo..."></textarea>
+            </div>
+          </div>
+        </section>
+      </div>
+      </div>
+    </div>
+
+    <div class="section collapsible-section" id="stepsSection" style="padding-top:18px">
+      <div class="section-head">
+        <div>
+          <div class="kicker">Fluxo operacional</div>
+          <div class="collapse-title-trigger" data-collapse="stages" tabindex="0" role="button"><h2>Etapas do processo</h2><span class="collapse-ind" data-collapse-ind="stages">+</span></div>
+          <p class="muted">Visual simplificado: título, resumo curto e acesso direto ao conteúdo completo.</p>
+        </div>
+      </div>
+      <div class="collapse-content"><div class="grid g4" id="stepsGrid"></div></div>
+    </div>
+
+    <div class="section collapsible-section" id="issuesSection" style="padding-top:4px">
+      <div class="section-head">
+        <div>
+          <div class="kicker">Leitura crítica</div>
+          <div class="collapse-title-trigger" data-collapse="issues" tabindex="0" role="button"><h2>Gargalos e impactos</h2><span class="collapse-ind" data-collapse-ind="issues">+</span></div>
+          <p class="muted">Card único com duas abas, para registrar gargalo e impacto de forma objetiva.</p>
+        </div>
+      </div>
+      <div class="collapse-content"><div id="issuesWrap"></div></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer-copy">© 2026 Wiley Christian Gil. All rights reserved.</div>
+</div>
+</footer>
+
+<div class="modal-wrap hidden" id="editorModal">
+  <div class="card editor-dialog">
+    <div class="editor-head" id="editorHead">
+      <div><strong id="editorTitle">Central de edição</strong><span id="editorSubtitle">Escolha a seção que deseja alterar de forma segura e profissional.</span></div>
+      <div class="editor-actions">
+        <button class="btn small discard-accent" data-global-discard type="button">Descartar</button>
+        <button class="btn small save-accent" data-global-save type="button">Salvar</button>
+        <button class="btn" id="closeEditorBtn" type="button">Fechar</button>
+      </div>
+    </div>
+    <div class="editor-body" id="editorBody"></div>
+    <div class="editor-footer">
+      <button class="btn small danger" id="clearStorageBtn" type="button">Limpar salvamento</button>
+      <button class="btn small hidden" id="editorBackBtn" type="button">Voltar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-wrap hidden" id="stepModal">
+  <div class="card step-dialog" id="stepDialog">
+    <div class="modal-head" id="stepHead">
+      <div class="modal-main">
+        <div class="modal-top"><span class="step-badge" id="stepModalNumber">01</span><div><small class="tag" id="stepModalTag">Etapa</small><h3 id="stepModalTitle">Detalhes da etapa</h3></div></div>
+        <p id="stepModalText">Resumo da etapa.</p>
+      </div>
+      <div class="editor-actions">
+        <button class="btn small" id="toggleFullscreenBtn" type="button">Tela cheia</button>
+      </div>
+      <button class="modal-close" id="closeStepBtn" type="button">×</button>
+    </div>
+    <div class="step-tabs">
+      <button class="step-tab active" data-step-tab="doc" type="button">Passo a passo</button>
+      <button class="step-tab" data-step-tab="analysis" type="button">Análise</button>
+    </div>
+    <div class="step-body">
+      <div class="step-panel" id="docPanel"></div>
+      <div class="step-panel hidden" id="analysisPanel"></div>
+    </div>
+  </div>
+</div>
+
+<div class="backdrop hidden" id="issuesBackdrop"></div>
+
+<div class="save-bar hidden" id="saveBar">
+  <div class="save-copy"><div class="dialog-title">Alterações pendentes</div><span>Existem edições em aberto. Salve antes de trocar de contexto ou fechar o navegador.</span></div>
+  <div class="section-actions">
+    <button class="btn small save-accent" id="saveAllBtn" type="button">Salvar</button>
+    <button class="btn small discard-accent" id="discardAllBtn" type="button">Descartar</button>
+  </div>
+</div>
+
+<div class="modal-wrap hidden" id="unsavedModal">
+  <div class="dialog">
+    <div class="dialog-title" id="unsavedHead">Alterações pendentes</div>
+    <div class="dialog-copy">Há campos editados que ainda não foram gravados. Você pode <strong>salvar</strong> antes de continuar, <strong>descartar</strong> as alterações em aberto ou <strong>continuar editando</strong>.</div>
+    <div class="section-actions">
+      <button class="btn small save-accent" id="unsavedSaveBtn" type="button">Salvar e continuar</button>
+      <button class="btn small discard-accent" id="unsavedDiscardBtn" type="button">Descartar e continuar</button>
+      <button class="btn small" id="unsavedKeepBtn" type="button">Continuar editando</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-wrap hidden" id="dialogModal">
+  <div class="dialog">
+    <div class="dialog-title" id="dialogHead">Confirmação</div>
+    <div class="dialog-copy" id="dialogMessage"></div>
+    <div class="dialog-field hidden" id="dialogFieldWrap"><label for="dialogInput" id="dialogLabel">Campo</label><input id="dialogInput" type="text" autocomplete="off"></div>
+    <div class="section-actions">
+      <button class="btn small hidden" id="dialogSecondaryBtn" type="button">Cancelar</button>
+      <button class="btn small" id="dialogPrimaryBtn" type="button">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast hidden" id="toast"><strong>Salvo com sucesso</strong><span id="toastMessage">As alterações foram gravadas.</span></div>
+
+<script>
+const STORAGE_KEYS=['mapeamento-processos-v21-clean','mapeamento-processos-v20'];
+const STORAGE_KEY=STORAGE_KEYS[0];
+const LOGO_DATA='data:image/png;base64,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';
+const $=(s,p=document)=>p.querySelector(s);
+const $$=(s,p=document)=>[...p.querySelectorAll(s)];
+const clone=v=>JSON.parse(JSON.stringify(v));
+const esc=t=>String(t??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+const slugify=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+
+function docFromStep(step){
+  const title=esc(step.title||'Etapa');
+  const text=String(step.text||'').split(/\n{2,}/).map(p=>p.trim()).filter(Boolean).map(p=>`<p>${esc(p).replace(/\n/g,'<br>')}</p>`).join('');
+  return `<h1>${title}</h1>${text||'<p>Comece a escrever o conteúdo desta etapa.</p>'}`;
+}
+function makeStep(i,data={}){
+  return {
+    tag:data.tag||`Etapa ${String(i+1).padStart(2,'0')}`,
+    step:String(data.step||i+1),
+    title:data.title||`Etapa ${i+1}`,
+    text:data.text||'Descreva a etapa do processo.',
+    documentHtml:data.documentHtml||docFromStep(data)
+  };
+}
+function makeIssueCard(data={}){
+  return {
+    id:data.id||`issue-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    scope:['global','process','step'].includes(data.scope)?data.scope:'process',
+    stepIndex:typeof data.stepIndex==='number'?data.stepIndex:null,
+    gargalo:{title:data.gargalo?.title||'',text:data.gargalo?.text||''},
+    impacto:{title:data.impacto?.title||'',text:data.impacto?.text||''}
+  };
+}
+function makeProcess(name='Novo processo',sector='cadastro',id=null){
+  return {
+    id:id||`${sector}-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,
+    name,sector,
+    systems:['','','',''],
+    processIntro:`Mapeamento do processo "${name}".`,
+    processSummary:'Digite aqui o resumo do processo.',
+    issueCards:[],
+    etapas:[makeStep(0,{title:'Nova etapa',text:'Descreva a etapa principal do processo.'})]
+  };
+}
+function defaults(){
+  const p1=makeProcess('Cadastro de produtos','cadastro','cad-1');
+  p1.systems=['ERP de Cadastro','Planilha interna','Portal comercial','E-mail'];
+  p1.processIntro='Mapeamento do processo de cadastro de produtos.';
+  p1.processSummary='Processo voltado ao recebimento, validação, cadastro e publicação de produtos no sistema, garantindo consistência dos dados e liberação correta para as áreas envolvidas.';
+  p1.etapas=[
+    makeStep(0,{title:'Recebimento das informações',text:'Coleta dos dados necessários para iniciar o cadastro.'}),
+    makeStep(1,{title:'Validação',text:'Conferência da consistência antes do cadastro.'}),
+    makeStep(2,{title:'Cadastro no sistema',text:'Registro ou atualização do item no sistema.'}),
+    makeStep(3,{title:'Revisão e publicação',text:'Conferência final e liberação para uso.'})
+  ];
+  p1.issueCards=[makeIssueCard({scope:'step',stepIndex:0,gargalo:{title:'Informação incompleta',text:'Muitos cadastros chegam sem dados mínimos obrigatórios, o que gera retrabalho e atraso na liberação.'},impacto:{title:'Reflexo em outras áreas',text:'Falhas nesse processo impactam a qualidade do dado, atrasam a comunicação e prejudicam a execução das áreas dependentes.'}})];
+
+  const p2=makeProcess('Cadastro de brindes','cadastro','cad-2');
+  p2.systems=['ERP de Cadastro','Planilha de apoio','Portal interno','WhatsApp corporativo'];
+  p2.processSummary='Processo de cadastro voltado ao controle e lançamento de brindes, mantendo padronização e rastreabilidade das informações utilizadas pelas áreas internas.';
+  p2.issueCards=[makeIssueCard({scope:'process',gargalo:{title:'Dependência manual',text:'Grande parte do fluxo depende de conferências e repasses manuais.'},impacto:{title:'Atraso operacional',text:'A lentidão no registro afeta a disponibilidade das informações para as áreas usuárias.'}})];
+
+  const nf1=makeProcess('Registro de notas bonificadas','notas-fiscais','nf-1');
+  nf1.systems=['ERP Fiscal','ERP Financeiro','Planilha de conferência','Portal XML'];
+  nf1.processIntro='Mapeamento do processo de notas fiscais de entrada.';
+  nf1.processSummary='Fluxo dedicado ao recebimento, validação, lançamento e encerramento de notas fiscais de entrada, preservando conformidade fiscal e rastreabilidade operacional.';
+  nf1.etapas=[
+    makeStep(0,{title:'Recebimento da nota',text:'Entrada do documento fiscal no fluxo.'}),
+    makeStep(1,{title:'Validação fiscal',text:'Conferência dos campos e consistência do documento.'}),
+    makeStep(2,{title:'Lançamento no sistema',text:'Registro da nota no sistema.'}),
+    makeStep(3,{title:'Conferência e fechamento',text:'Revisão final e encerramento do processo.'})
+  ];
+  nf1.issueCards=[makeIssueCard({scope:'process',gargalo:{title:'Dependência manual',text:'Uso excessivo de repasse manual entre pessoas e áreas.'},impacto:{title:'Reflexo financeiro',text:'Problemas do processo afetam custos, prazo e fechamento.'}})];
+
+  const nf2=makeProcess('Registro de notas de vendas','notas-fiscais','nf-2');
+  nf2.systems=['ERP Financeiro','Planilha de lançamentos','Leitor XML','E-mail'];
+  nf2.processSummary='Fluxo de registro de notas de venda com foco em conferência documental, lançamento seguro e integração operacional.';
+  nf2.issueCards=[makeIssueCard({scope:'process',gargalo:{title:'Validação incompleta',text:'Notas chegam com pendências documentais e exigem novo tratamento.'},impacto:{title:'Reprocesso',text:'O retrabalho impacta o tempo de resposta e o fechamento operacional.'}})];
+
+  const nf3=makeProcess('Registro de brindes','notas-fiscais','nf-3');
+  nf3.systems=['ERP Fiscal','Planilha de controle','Portal de documentos','Teams'];
+  nf3.processSummary='Processo voltado ao registro e controle fiscal de brindes, com acompanhamento documental e apoio entre áreas.';
+  nf3.issueCards=[makeIssueCard({scope:'process',gargalo:{title:'Critério inconsistente',text:'Nem sempre os critérios de registro seguem o mesmo padrão.'},impacto:{title:'Baixa padronização',text:'Diferenças de execução afetam a consistência final do processo.'}})];
+
+  return {
+    hero:{eyebrow:'MAPEAMENTO OPERACIONAL',title:'Análise estruturada de processos',description:'Selecione um setor e um processo para visualizar o fluxo operacional, as etapas e os impactos relacionados.'},
+    globalIssueCards:[],
+    sectors:{
+      cadastro:{name:'Cadastro',processes:[p1,p2]},
+      'notas-fiscais':{name:'Notas Fiscais',processes:[nf1,nf2,nf3]}
+    },
+    ui:{
+      currentSector:'cadastro',
+      activeProcessBySector:{cadastro:'cad-1','notas-fiscais':'nf-1'},
+      processManualBySector:{cadastro:false,'notas-fiscais':false},
+      collapsed:{processMap:true,stages:true,issues:true},
+      sidebarCollapsed:true,
+      structureEdit:false,
+      issuesFullscreen:false
+    }
+  };
+}
+function normalize(raw){
+  const base=defaults();
+  if(!raw) return base;
+  const state=clone(base);
+  if(raw.hero) state.hero={...state.hero,...raw.hero};
+  const sectorKeys=[...new Set([...Object.keys(base.sectors),...Object.keys(raw.sectors||{})])];
+  state.sectors={}; state.ui.activeProcessBySector={}; state.ui.processManualBySector={};
+  sectorKeys.forEach(key=>{
+    const source=raw.sectors?.[key]||base.sectors[key]||{name:key,processes:[makeProcess('Novo processo',key)]};
+    const processes=(Array.isArray(source.processes)&&source.processes.length?source.processes:[makeProcess('Novo processo',key)]).map((p,i)=>({
+      id:p.id||`${key}-${i+1}`,
+      name:p.name||`Processo ${i+1}`,
+      sector:key,
+      systems:Array.isArray(p.systems)&&p.systems.length?p.systems.map(v=>String(v??'')):['','','',''],
+      processIntro:p.processIntro||`Mapeamento do processo "${p.name||`Processo ${i+1}`}".`,
+      processSummary:p.processSummary||'',
+      issueCards:Array.isArray(p.issueCards)?p.issueCards.map(makeIssueCard):[],
+      etapas:(Array.isArray(p.etapas)&&p.etapas.length?p.etapas:[{}]).map((step,idx)=>makeStep(idx,step))
+    }));
+    state.sectors[key]={name:source.name||key,processes};
+    const active=raw.ui?.activeProcessBySector?.[key]||source.activeProcessId||processes[0].id;
+    state.ui.activeProcessBySector[key]=processes.some(p=>p.id===active)?active:processes[0].id;
+    state.ui.processManualBySector[key]=!!raw.ui?.processManualBySector?.[key];
+  });
+  state.globalIssueCards=Array.isArray(raw.globalIssueCards)?raw.globalIssueCards.map(makeIssueCard):[];
+  state.ui.currentSector=state.sectors[raw.ui?.currentSector]?raw.ui.currentSector:Object.keys(state.sectors)[0];
+  state.ui.collapsed={...base.ui.collapsed,...(raw.ui?.collapsed||{})};
+  state.ui.sidebarCollapsed=typeof raw.ui?.sidebarCollapsed==='boolean'?raw.ui.sidebarCollapsed:true;
+  state.ui.structureEdit=!!raw.ui?.structureEdit;
+  state.ui.issuesFullscreen=!!raw.ui?.issuesFullscreen;
+  return state;
+}
+function loadState(){
+  for(const key of STORAGE_KEYS){
+    try{
+      const raw=localStorage.getItem(key);
+      if(raw) return normalize(JSON.parse(raw));
+    }catch(e){}
+  }
+  return defaults();
+}
+let state=loadState();
+let saved=clone(state);
+let dirty=false;
+let processSearch='';
+let pendingAction=null;
+let stepModalIndex=null;
+let stepModalTab='doc';
+let stepDocSaved='';
+let stepDocDirty=false;
+let stepDocRange=null;
+let issueDrafts={};
+let issueModes={};
+let issueCreatorOpen=false;
+let issueCreatorMode='process';
+let issueCreatorStep=0;
+let fullscreenStep=false;
+let toastTimer=null;
+let dialogResolve=null;
+
+const E={
+  body:document.body,
+  toggleStructureBtn:$('#toggleStructureBtn'),
+  openEditorBtn:$('#openEditorBtn'),
+  toggleSidebarBtn:$('#toggleSidebarBtn'),
+  toggleSidebarLabel:$('#toggleSidebarLabel'),
+  sectorBlock:$('#sectorBlock'),
+  sectorTrigger:$('#sectorTrigger'),
+  sectorList:$('#sectorList'),
+  sectorCurrentLabel:$('#sectorCurrentLabel'),
+  addSectorBtn:$('#addSectorBtn'),
+  renameSectorBtn:$('#renameSectorBtn'),
+  removeSectorBtn:$('#removeSectorBtn'),
+  heroEyebrow:$('#heroEyebrow'),
+  heroTitle:$('#heroTitle'),
+  heroDescription:$('#heroDescription'),
+  editHeroBtn:$('#editHeroBtn'),
+  processCountValue:$('#processCountValue'),
+  processCountText:$('#processCountText'),
+  processIntro:$('#processIntro'),
+  searchHost:$('#searchHost'),
+  processList:$('#processList'),
+  addProcessBtn:$('#addProcessBtn'),
+  renameProcessBtn:$('#renameProcessBtn'),
+  removeProcessBtn:$('#removeProcessBtn'),
+  editProcessIntroBtn:$('#editProcessIntroBtn'),
+  processSummaryField:$('#processSummaryField'),
+  summaryTools:$('#summaryTools'),
+  systemsSection:$('#systemsSection'),
+  systemsGrid:$('#systemsGrid'),
+  addSystemBtn:$('#addSystemBtn'),
+  processMapSection:$('#processMapSection'),
+  stepsSection:$('#stepsSection'),
+  stepsGrid:$('#stepsGrid'),
+  issuesSection:$('#issuesSection'),
+  issuesWrap:$('#issuesWrap'),
+  issuesBackdrop:$('#issuesBackdrop'),
+  editorModal:$('#editorModal'),
+  editorHead:$('#editorHead'),
+  editorTitle:$('#editorTitle'),
+  editorSubtitle:$('#editorSubtitle'),
+  editorBody:$('#editorBody'),
+  closeEditorBtn:$('#closeEditorBtn'),
+  editorBackBtn:$('#editorBackBtn'),
+  clearStorageBtn:$('#clearStorageBtn'),
+  stepModal:$('#stepModal'),
+  stepDialog:$('#stepDialog'),
+  stepHead:$('#stepHead'),
+  stepModalNumber:$('#stepModalNumber'),
+  stepModalTag:$('#stepModalTag'),
+  stepModalTitle:$('#stepModalTitle'),
+  stepModalText:$('#stepModalText'),
+  toggleFullscreenBtn:$('#toggleFullscreenBtn'),
+  closeStepBtn:$('#closeStepBtn'),
+  docSaveBtn:$('#docSaveBtn'),
+  docDiscardBtn:$('#docDiscardBtn'),
+  docPanel:$('#docPanel'),
+  analysisPanel:$('#analysisPanel'),
+  saveBar:$('#saveBar'),
+  saveAllBtn:$('#saveAllBtn'),
+  discardAllBtn:$('#discardAllBtn'),
+  unsavedModal:$('#unsavedModal'),
+  unsavedSaveBtn:$('#unsavedSaveBtn'),
+  unsavedDiscardBtn:$('#unsavedDiscardBtn'),
+  unsavedKeepBtn:$('#unsavedKeepBtn'),
+  dialogModal:$('#dialogModal'),
+  dialogHead:$('#dialogHead'),
+  dialogMessage:$('#dialogMessage'),
+  dialogFieldWrap:$('#dialogFieldWrap'),
+  dialogLabel:$('#dialogLabel'),
+  dialogInput:$('#dialogInput'),
+  dialogPrimaryBtn:$('#dialogPrimaryBtn'),
+  dialogSecondaryBtn:$('#dialogSecondaryBtn'),
+  toast:$('#toast'),
+  toastMessage:$('#toastMessage')
+};
+
+function persist(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}
+function currentSectorKey(){return state.sectors[state.ui.currentSector]?state.ui.currentSector:Object.keys(state.sectors)[0]}
+function currentSector(){return state.sectors[currentSectorKey()]}
+function currentProcessId(){
+  const key=currentSectorKey(); const list=currentSector().processes; const active=state.ui.activeProcessBySector[key]||list[0]?.id;
+  return list.some(p=>p.id===active)?active:list[0]?.id;
+}
+function currentProcess(){return currentSector().processes.find(p=>p.id===currentProcessId())||currentSector().processes[0]}
+function allCollapsed(){const c=state.ui.collapsed; return c.processMap&&c.stages&&c.issues}
+function shouldShowSystems(){return !!state.ui.processManualBySector[currentSectorKey()] && !allCollapsed()}
+function activeField(){const el=document.activeElement; if(!el) return null; if(el.matches?.('input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]), textarea')) return el; if(el.isContentEditable) return el; return null}
+function anyIssueDrafts(){return Object.keys(issueDrafts).length>0}
+function anythingDirty(){return dirty||stepDocDirty||anyIssueDrafts()}
+function setDirty(){dirty=true; renderSaveBar()}
+function renderSaveBar(){
+  const localFixed=!E.editorModal.classList.contains('hidden')||(!E.stepModal.classList.contains('hidden')&&stepModalTab==='doc');
+  E.saveBar.classList.toggle('hidden',!dirty||localFixed||!!activeField());
+}
+function showToast(msg='As alterações foram gravadas.'){
+  clearTimeout(toastTimer);
+  E.toastMessage.textContent=msg; E.toast.classList.remove('hidden');
+  toastTimer=setTimeout(()=>E.toast.classList.add('hidden'),2200);
+}
+function commitSave(msg='As alterações foram gravadas com sucesso.'){
+  persist(); saved=clone(state); dirty=false; renderSaveBar(); showToast(msg);
+}
+function discardAll(){
+  state=clone(saved); dirty=false; issueDrafts={}; issueModes={}; stepDocDirty=false; stepDocSaved=''; stepModalIndex=null; stepModalTab='doc'; fullscreenStep=false;
+  E.editorModal.classList.add('hidden'); E.stepModal.classList.add('hidden');
+  render();
+}
+function openUnsaved(action){pendingAction=action; E.unsavedModal.classList.remove('hidden')}
+function closeUnsaved(){pendingAction=null; E.unsavedModal.classList.add('hidden')}
+function runOrConfirm(action){if(!anythingDirty()) action(); else openUnsaved(action)}
+
+function setDialogMessage(msg=''){E.dialogMessage.innerHTML=String(msg).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])).replace(/\n/g,'<br>')}
+function resolveDialog(payload){const r=dialogResolve; dialogResolve=null; E.dialogModal.classList.add('hidden'); E.dialogFieldWrap.classList.add('hidden'); E.dialogInput.value=''; E.dialogInput.type='text'; E.dialogSecondaryBtn.classList.add('hidden'); if(r) r(payload)}
+function openDialog({title='Confirmação',message='',confirmText='Confirmar',cancelText='',danger=false,input=false,inputLabel='Campo',defaultValue='',placeholder='',inputType='text'}={}){
+  return new Promise(resolve=>{
+    dialogResolve=resolve;
+    E.dialogHead.textContent=title; setDialogMessage(message);
+    E.dialogPrimaryBtn.textContent=confirmText;
+    E.dialogPrimaryBtn.classList.toggle('danger',danger);
+    E.dialogSecondaryBtn.textContent=cancelText||'Cancelar';
+    E.dialogSecondaryBtn.classList.toggle('hidden',!cancelText);
+    E.dialogFieldWrap.classList.toggle('hidden',!input);
+    E.dialogLabel.textContent=inputLabel;
+    E.dialogInput.value=defaultValue||'';
+    E.dialogInput.placeholder=placeholder||'';
+    E.dialogInput.type=inputType||'text';
+    E.dialogModal.classList.remove('hidden');
+    setTimeout(()=>{(input?E.dialogInput:E.dialogPrimaryBtn).focus()},30);
+  })
+}
+async function alertBox(msg,title='Aviso',confirmText='Fechar'){await openDialog({title,message:msg,confirmText})}
+async function confirmBox(msg,opts={}){const r=await openDialog({message:msg,cancelText:'Cancelar',...opts}); return !!r?.confirmed}
+async function promptBox(msg,opts={}){const r=await openDialog({message:msg,input:true,cancelText:'Cancelar',...opts}); return r?.confirmed ? r.value.trim() : null}
+
+function updateSidebar(){
+  E.body.classList.toggle('sidebar-collapsed',!!state.ui.sidebarCollapsed);
+  E.body.classList.toggle('structure-edit',!!state.ui.structureEdit);
+  E.body.classList.toggle('presentation-mode',!state.ui.structureEdit);
+  E.toggleSidebarLabel.textContent=state.ui.sidebarCollapsed?'Menu':'Ocultar menu';
+  E.toggleStructureBtn.textContent=state.ui.structureEdit?'Bloquear edição':'Liberar edição';
+  $$('.structure-only').forEach(el=>el.classList.toggle('hidden',!state.ui.structureEdit));
+  E.openEditorBtn.classList.toggle('hidden',!state.ui.structureEdit);
+  E.addSectorBtn.classList.toggle('hidden',!state.ui.structureEdit);
+  E.renameSectorBtn.classList.toggle('hidden',!state.ui.structureEdit);
+  E.removeSectorBtn.classList.toggle('hidden',!state.ui.structureEdit);
+  E.editHeroBtn.classList.toggle('hidden',!state.ui.structureEdit);
+  E.editProcessIntroBtn.classList.toggle('hidden',!state.ui.structureEdit);
+  const cluster=$('#connectedFlowCluster');
+  if(cluster) cluster.classList.toggle('cluster-collapsed-view',allCollapsed());
+}
+function renderCollapse(){
+  ['processMap','stages','issues'].forEach(k=>{
+    const map={processMap:E.processMapSection,stages:E.stepsSection,issues:E.issuesSection}[k];
+    map.classList.toggle('collapsed',!!state.ui.collapsed[k]);
+    const ind=$(`[data-collapse-ind="${k}"]`); if(ind) ind.textContent=state.ui.collapsed[k]?'+':'−';
+  });
+}
+function renderHero(){
+  E.heroEyebrow.textContent=state.hero.eyebrow;
+  E.heroTitle.textContent=state.hero.title;
+  E.heroDescription.textContent=state.hero.description;
+}
+function renderSectors(){
+  const keys=Object.keys(state.sectors); const sector=currentSector();
+  E.sectorCurrentLabel.textContent=sector.name;
+  E.sectorList.innerHTML=keys.map(k=>`<li><button class="selector-item ${k===currentSectorKey()?'active':''}" data-sector="${esc(k)}" type="button">${esc(state.sectors[k].name)}</button></li>`).join('');
+  E.processCountValue.textContent=String(sector.processes.length).padStart(2,'0');
+  E.processCountText.textContent=`${sector.processes.length} processo${sector.processes.length===1?'':'s'} cadastrado${sector.processes.length===1?'':'s'} no setor ${sector.name}.`;
+}
+function renderSearch(){
+  E.searchHost.innerHTML=`<div class="search-shell"><input class="search-input" id="processSearchInput" type="search" placeholder="Buscar processos cadastrados" value="${esc(processSearch)}"><div class="search-meta" id="processSearchMeta"></div></div>`;
+  $('#processSearchInput').addEventListener('input',e=>{processSearch=e.target.value||''; renderProcessList()});
+}
+function highlight(name,q){
+  const raw=String(name||''); if(!q) return esc(raw); const safe=q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); return esc(raw).replace(new RegExp(`(${safe})`,'ig'),'<mark class="hit">$1</mark>');
+}
+function renderProcessList(){
+  const proc=currentProcess(); E.processIntro.textContent=proc.processIntro;
+  const q=processSearch.trim().toLowerCase();
+  const list=currentSector().processes.filter(p=>!q||p.name.toLowerCase().includes(q));
+  E.processList.innerHTML=list.length?list.map(p=>`<li><button class="process-item ${p.id===proc.id?'active':''}" data-process="${esc(p.id)}" type="button"><span>${highlight(p.name,q)}</span></button></li>`).join(''):'<li class="no-results">Nenhum processo encontrado para a busca atual.</li>';
+  $('#processSearchMeta').textContent=q?`${list.length} processo(s) encontrado(s)`:`${currentSector().processes.length} processo(s) cadastrado(s)`;
+}
+function autoGrow(t){if(!t||t.tagName!=='TEXTAREA') return; t.style.height='auto'; t.style.height=Math.max(t.scrollHeight,44)+'px'}
+function renderTextTools(host, textarea){
+  host.innerHTML=`<button class="text-tool" type="button" data-insert="• ">•</button><button class="text-tool" type="button" data-insert="▪ ">▪</button><button class="text-tool" type="button" data-insert="↳ ">↳</button><button class="text-tool" type="button" data-insert="\\n\\n">¶</button>`;
+  autoGrow(textarea);
+}
+function insertAtCursor(t,s){const start=t.selectionStart??t.value.length,end=t.selectionEnd??t.value.length; t.value=`${t.value.slice(0,start)}${s}${t.value.slice(end)}`; const pos=start+s.length; t.setSelectionRange(pos,pos); t.dispatchEvent(new Event('input',{bubbles:true})); t.focus()}
+function renderSummary(){E.processSummaryField.value=currentProcess().processSummary||''; E.processSummaryField.readOnly=!state.ui.structureEdit; renderTextTools(E.summaryTools,E.processSummaryField); E.summaryTools.classList.toggle('hidden',!state.ui.structureEdit)}
+function renderSystems(){
+  E.systemsSection.classList.toggle('hidden',!shouldShowSystems());
+  const systems=currentProcess().systems; E.systemsGrid.style.setProperty('--cols',systems.length);
+  E.addSystemBtn.classList.toggle('hidden',!state.ui.structureEdit);
+  E.systemsGrid.innerHTML=systems.map((v,i)=>`<div class="system-item"><input class="system-input" data-system="${i}" type="text" value="${esc(v)}" placeholder="Digite o sistema utilizado" ${state.ui.structureEdit?'':'disabled'}>${systems.length>1&&state.ui.structureEdit?`<button class="icon-btn danger system-remove" data-remove-system="${i}" type="button">×</button>`:''}</div>`).join('');
+}
+function renderSteps(){
+  E.stepsGrid.innerHTML=currentProcess().etapas.map((s,i)=>`<article class="card stage-card" data-step="${i}"><div class="stage-top">${state.ui.structureEdit?`<button class="icon-btn danger stage-remove" data-delete-step="${i}" type="button">×</button>`:''}<div class="stage-head"><div class="stage-id"><span class="step-badge">${esc(s.step)}</span><div><div class="stage-title">${esc(s.title)}</div></div></div><div class="stage-tools">${state.ui.structureEdit?`<button class="icon-btn" data-edit-step="${i}" type="button">✎</button>`:''}</div></div></div><div class="stage-body"><div class="stage-summary">${esc(s.text)}</div><div class="stage-actions"><button class="btn stage-detail" data-open-step="${i}" type="button">Ver detalhes completos →</button></div></div></article>`).join('')+(state.ui.structureEdit?`<button class="add-stage" id="addStepBtn" type="button"><div class="add-stage-shell"><div class="add-stage-plus">+</div></div></button>`:'');
+}
+function inferIssueMode(card){const i=!!(card.impacto?.title||card.impacto?.text),g=!!(card.gargalo?.title||card.gargalo?.text); return i&&!g?'impacto':'gargalo'}
+function getCardMode(id, card){if(!issueModes[id]) issueModes[id]=inferIssueMode(card); return issueModes[id]}
+function getStoredCard(id){
+  const g=state.globalIssueCards.find(c=>c.id===id); if(g) return {card:g,collection:state.globalIssueCards};
+  const p=currentProcess().issueCards.find(c=>c.id===id); if(p) return {card:p,collection:currentProcess().issueCards};
+  return null;
+}
+function getDraftCard(card){return issueDrafts[card.id]?.draft||card}
+function cardScopeMeta(card){
+  if(card.scope==='global') return {label:'Card sem vínculo',detail:'Informativo geral da leitura crítica',cls:'scope-global'};
+  if(card.scope==='process') return {label:'Card do processo',detail:`Processo: ${currentProcess().name} • Sem etapa vinculada`,cls:'scope-process'};
+  const stepName=currentProcess().etapas[card.stepIndex]?.title||`Etapa ${String((card.stepIndex??0)+1).padStart(2,'0')}`;
+  return {label:'Card da etapa',detail:`Processo: ${currentProcess().name} • ${stepName}`,cls:'scope-step'};
+}
+function issuePreview(g){const txt=`${g?.title||''}${g?.text?(g?.title?' — ':'')+g.text:''}`.trim(); return txt||'Preencha o conteúdo deste lado da leitura crítica.'}
+function renderIssueCard(card){
+  const c=getDraftCard(card); const mode=getCardMode(c.id,c); const meta=cardScopeMeta(c); const hasDraft=!!issueDrafts[c.id];
+  return `<article class="issue-card mode-${mode}" data-card="${c.id}" data-mode="${mode}">
+    <div class="issue-card-head">
+      <div class="issue-strip"></div>
+      <div class="issue-card-main">
+        <div class="issue-card-note"><span class="scope-badge ${meta.cls}">${esc(meta.label)}</span> • ${esc(meta.detail)}</div>
+        <div class="issue-preview"><div>${mode==='impacto'?'<span class="mode-badge mode-i">Impacto</span>':'<span class="mode-badge mode-g">Gargalo</span>'}</div></div>
+      </div>
+      <div class="issue-top-actions">
+        <div class="issue-tabs"><button class="issue-tab warn ${mode==='gargalo'?'active':''}" data-card-tab="gargalo" type="button">Gargalo</button><button class="issue-tab impact ${mode==='impacto'?'active':''}" data-card-tab="impacto" type="button">Impacto</button></div>
+        ${state.ui.structureEdit?`<button class="issue-delete" data-delete-card="${c.id}" type="button">Excluir</button>`:''}
+      </div>
+    </div>
+    <div class="issue-card-body">
+      <div class="issue-panel ${mode==='gargalo'?'':'hidden'}" data-panel="gargalo">
+        <div class="issue-edit"><label>Título do gargalo</label><input class="issue-input" data-card-title="gargalo" data-card-id="${c.id}" type="text" value="${esc(c.gargalo.title)}" placeholder="Digite o título do gargalo" ${state.ui.structureEdit?'':'disabled'}></div>
+        <div class="issue-edit"><label>Descrição do gargalo</label><textarea class="issue-text" data-card-text="gargalo" data-card-id="${c.id}" placeholder="Digite aqui a descrição do gargalo..." ${state.ui.structureEdit?'':'disabled'}>${esc(c.gargalo.text)}</textarea></div>
+      </div>
+      <div class="issue-panel ${mode==='impacto'?'':'hidden'}" data-panel="impacto">
+        <div class="issue-edit"><label>Título do impacto</label><input class="issue-input" data-card-title="impacto" data-card-id="${c.id}" type="text" value="${esc(c.impacto.title)}" placeholder="Digite o título do impacto" ${state.ui.structureEdit?'':'disabled'}></div>
+        <div class="issue-edit"><label>Descrição do impacto</label><textarea class="issue-text" data-card-text="impacto" data-card-id="${c.id}" placeholder="Digite aqui a descrição do impacto..." ${state.ui.structureEdit?'':'disabled'}>${esc(c.impacto.text)}</textarea></div>
+      </div>
+      ${state.ui.structureEdit?`<div class="issue-footer"><button class="btn small discard-accent" data-discard-card="${c.id}" type="button" ${hasDraft?'':'disabled'}>Descartar</button><button class="btn small save-accent" data-save-card="${c.id}" type="button" ${hasDraft?'':'disabled'}>Salvar</button></div>`:''}
+    </div>
+  </article>`;
+}
+function renderIssueCreator(){
+  const options=currentProcess().etapas.map((s,i)=>`<option value="${i}" ${i===issueCreatorStep?'selected':''}>${esc(s.title||`Etapa ${i+1}`)}</option>`).join('');
+  return `<section class="issue-create">
+    <div class="issue-create-grid">
+      <div class="issue-create-field">
+        <label>Vínculo do card</label>
+        <div class="issue-create-options">
+          <label class="issue-create-option"><input type="radio" name="creatorMode" value="linked" ${issueCreatorMode==='linked'?'checked':''}> <span>Vincular a uma etapa</span></label>
+          <label class="issue-create-option"><input type="radio" name="creatorMode" value="process" ${issueCreatorMode==='process'?'checked':''}> <span>Manter apenas no processo</span></label>
+          <label class="issue-create-option"><input type="radio" name="creatorMode" value="global" ${issueCreatorMode==='global'?'checked':''}> <span>Card sem vínculo</span></label>
+        </div>
+      </div>
+      ${issueCreatorMode==='linked'?`<div class="issue-create-field"><label for="creatorStepSelect">Etapa vinculada</label><select id="creatorStepSelect">${options}</select></div>`:`<div class="issue-create-field"><label>Escopo</label><select disabled><option>${issueCreatorMode==='global'?'Informativo geral da leitura crítica':'Card geral do processo'}</option></select></div>`}
+    </div>
+    <div class="section-actions"><button class="btn small" id="createCardBtn" type="button">Criar card</button><button class="btn small danger" id="cancelCreateCardBtn" type="button">Cancelar</button></div>
+  </section>`;
+}
+function renderIssues(){
+  const cards=[...state.globalIssueCards,...currentProcess().issueCards].slice().reverse();
+  E.issuesWrap.innerHTML=`<article class="card issues-card ${state.ui.issuesFullscreen?'fullscreen':''}" id="issuesCard"><div class="issues-head"><div><strong>Cards de gargalos e impactos</strong><div class="muted">Lista única do processo atual com cards vinculados e informativos gerais sem vínculo.</div></div><div class="section-actions">${state.ui.structureEdit?'<button class=\"btn small\" id=\"openCreateCardBtn\" type=\"button\">Adicionar card</button>':''}<button class="btn small" id="toggleIssuesFullscreenBtn" type="button">${state.ui.issuesFullscreen?'Sair da tela cheia':'Tela cheia'}</button></div></div><div class="issues-body">${issueCreatorOpen?renderIssueCreator():''}${cards.length?`<div class="issues-stack">${cards.map(renderIssueCard).join('')}</div>`:'<div class="empty-state">Ainda não há cards cadastrados para este processo. Você pode adicionar direto nesta seção ou continuar usando <strong>Ver detalhes</strong> para alimentar a lista automaticamente.</div>'}</div></article>`;
+  E.issuesBackdrop.classList.toggle('hidden',!state.ui.issuesFullscreen);
+  $$('.issue-text',E.issuesWrap).forEach(autoGrow);
+}
+function renderEditor(mode='hub', idx=null){
+  E.editorModal.classList.remove('hidden'); E.editorBackBtn.classList.toggle('hidden',mode==='hub');
+  const p=currentProcess(), step=typeof idx==='number'?p.etapas[idx]:null;
+  E.editorModal.dataset.mode=mode; E.editorModal.dataset.index=idx??'';
+  if(mode==='hero'){
+    E.editorTitle.textContent='Editar hero principal'; E.editorSubtitle.textContent='Ajuste os textos estratégicos da abertura em uma janela centralizada e segura.';
+    E.editorBody.innerHTML=`<div class="editor-form"><div class="editor-meta">Você está editando a apresentação principal da página. As alterações serão persistidas ao clicar em <strong>Salvar</strong>.</div><div class="editor-grid"><div class="editor-field editor-full"><label>Faixa superior</label><input class="editor-input" id="heroEyebrowInput" type="text" value="${esc(state.hero.eyebrow)}"></div><div class="editor-field editor-full"><label>Título principal</label><textarea class="editor-textarea" id="heroTitleInput">${esc(state.hero.title)}</textarea></div><div class="editor-field editor-full"><label>Descrição</label><textarea class="editor-textarea" id="heroDescriptionInput">${esc(state.hero.description)}</textarea></div></div></div>`;
+  }else if(mode==='process'){
+    E.editorTitle.textContent='Editar apresentação do processo'; E.editorSubtitle.textContent='Atualize o texto que aparece acima da lista de processos do item atualmente selecionado.';
+    E.editorBody.innerHTML=`<div class="editor-form"><div class="editor-meta">Processo atual: <strong>${esc(p.name)}</strong>.</div><div class="editor-field editor-full"><label>Texto de apresentação</label><textarea class="editor-textarea" id="processIntroInput">${esc(p.processIntro)}</textarea></div></div>`;
+  }else if(mode==='step'&&step){
+    E.editorTitle.textContent='Editar etapa do processo'; E.editorSubtitle.textContent='Altere o número, o título e o resumo curto da etapa sem editar diretamente no card.';
+    E.editorBody.innerHTML=`<div class="editor-form"><div class="editor-meta">Processo: <strong>${esc(p.name)}</strong> · Etapa selecionada: <strong>${esc(step.title)}</strong>.</div><div class="editor-grid"><div class="editor-field"><label>Número da etapa</label><input class="editor-input" id="stepNumberInput" type="text" value="${esc(step.step)}"></div><div class="editor-field editor-full"><label>Título</label><input class="editor-input" id="stepTitleInput" type="text" value="${esc(step.title)}"></div><div class="editor-field editor-full"><label>Resumo do card</label><textarea class="editor-textarea" id="stepSummaryInput">${esc(step.text)}</textarea></div></div></div>`;
+  }else{
+    E.editorTitle.textContent='Central de edição'; E.editorSubtitle.textContent='Escolha exatamente qual área deseja alterar. A edição não acontece mais por clique direto no texto.';
+    E.editorBody.innerHTML=`<div class="editor-hub"><div class="editor-meta">Use a central para abrir formulários específicos por bloco. Isso reduz cliques acidentais e mantém a edição no padrão profissional do sistema.</div><button class="editor-shortcut" data-editor-open="hero" type="button">Hero principal<small>Editar faixa superior, título e descrição da abertura.</small></button><button class="editor-shortcut" data-editor-open="process" type="button">Apresentação do processo atual<small>Editar o texto exibido acima da lista de processos do item selecionado.</small></button><div class="editor-stage-list">${p.etapas.map((s,i)=>`<button class="editor-stage-btn" data-editor-open="step" data-editor-index="${i}" type="button">Etapa ${esc(s.step)} · ${esc(s.title)}<small>Editar número, título e resumo curto do card principal.</small></button>`).join('')}</div></div>`;
+  }
+  $$('.editor-textarea',E.editorBody).forEach(autoGrow);
+}
+function sanitizeDoc(html=''){
+  const template=document.createElement('template'); template.innerHTML=String(html||'');
+  const allowed=new Set(['P','BR','STRONG','B','EM','I','U','UL','OL','LI','H1','H2','H3','IMG','SPAN']);
+  const walker=document.createTreeWalker(template.content,NodeFilter.SHOW_ELEMENT); const nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(node=>{
+    if(!allowed.has(node.tagName)){const p=node.parentNode; while(node.firstChild) p.insertBefore(node.firstChild,node); p.removeChild(node); return}
+    [...node.attributes].forEach(attr=>{
+      const n=attr.name.toLowerCase();
+      if(node.tagName==='IMG'){if(!['src','alt'].includes(n)) node.removeAttribute(attr.name)}
+      else if(node.tagName==='SPAN'){if(!(n==='class'&&attr.value==='lg')) node.removeAttribute(attr.name)}
+      else node.removeAttribute(attr.name)
+    });
+  });
+  return template.innerHTML.trim()||'<p>Comece a escrever o conteúdo desta etapa.</p>';
+}
+function storeRange(){
+  const editor=$('#stepDocEditor'); const sel=window.getSelection(); if(!editor||!sel||!sel.rangeCount) return;
+  const range=sel.getRangeAt(0); if(editor.contains(range.commonAncestorContainer)) stepDocRange=range.cloneRange();
+}
+function restoreRange(){
+  const editor=$('#stepDocEditor'); if(!editor) return; editor.focus();
+  if(stepDocRange){const sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(stepDocRange)}
+}
+function wrapSel(tag,cls=''){
+  const editor=$('#stepDocEditor'); if(!editor) return; restoreRange();
+  const sel=window.getSelection(); if(!sel||!sel.rangeCount) return; const range=sel.getRangeAt(0); if(!editor.contains(range.commonAncestorContainer)||range.collapsed) return;
+  const el=document.createElement(tag); if(cls) el.className=cls;
+  try{range.surroundContents(el)}catch{const c=range.extractContents(); el.appendChild(c); range.insertNode(el)}
+  sel.removeAllRanges(); const nr=document.createRange(); nr.selectNodeContents(el); nr.collapse(false); sel.addRange(nr); storeRange();
+}
+function insertDocHtml(html){
+  const editor=$('#stepDocEditor'); if(!editor) return; restoreRange(); const sel=window.getSelection(); if(!sel||!sel.rangeCount) return; const range=sel.getRangeAt(0); if(!editor.contains(range.commonAncestorContainer)) return;
+  range.deleteContents(); const t=document.createElement('template'); t.innerHTML=html; const frag=t.content; const last=frag.lastChild; range.insertNode(frag); if(last){range.setStartAfter(last); range.collapse(true); sel.removeAllRanges(); sel.addRange(range)} storeRange(); stepDocDirty=editor.innerHTML!==stepDocSaved; updateDocButtons();
+}
+function updateDocButtons(){const on=!!stepDocDirty&&!!state.ui.structureEdit; ['docSaveBtn','docDiscardBtn','docSaveInline','docDiscardInline'].forEach(id=>{const b=$('#'+id); if(b){b.disabled=!on; b.classList.toggle('hidden',!state.ui.structureEdit);}})}
+async function addDocImageUrl(){
+  storeRange();
+  const url=await promptBox('Cole a URL da imagem que deseja inserir no documento desta etapa.',{title:'Inserir imagem por URL',inputLabel:'URL da imagem',placeholder:'https://exemplo.com/imagem.png',confirmText:'Inserir imagem',inputType:'url'});
+  if(!url) return; insertDocHtml(`<p><img src="${esc(url)}" alt="Imagem inserida"></p>`);
+}
+function fileData(file){return new Promise((resolve,reject)=>{const r=new FileReader(); r.onload=()=>resolve(String(r.result||'')); r.onerror=()=>reject(new Error('Falha ao ler')); r.readAsDataURL(file)})}
+async function addDocImageUpload(file){if(!file) return; try{const data=await fileData(file); insertDocHtml(`<p><img src="${data}" alt="Imagem inserida"></p>`)}catch(e){await alertBox('Não foi possível inserir esta imagem no documento.','Imagem inválida')}}
+function renderDocPanel(){
+  const step=currentProcess().etapas[stepModalIndex]; stepDocSaved=step.documentHtml||docFromStep(step); stepDocDirty=false;
+  const editable=!!state.ui.structureEdit;
+  E.docPanel.innerHTML=`<section class="doc-layout">${editable?`<div class=\"doc-toolbar\"><div class=\"doc-tool-group\"><button class=\"doc-tool\" data-doc-cmd=\"bold\" type=\"button\"><strong>B</strong></button><button class=\"doc-tool\" data-doc-cmd=\"lg\" type=\"button\">A+</button><button class=\"doc-tool\" data-doc-cmd=\"ul\" type=\"button\">• Lista</button><button class=\"doc-tool\" id=\"docImageUrlBtn\" type=\"button\">Imagem por URL</button><label class=\"doc-tool doc-upload\">Upload de imagem<input id=\"docImageUpload\" type=\"file\" accept=\"image/*\"></label></div><div class=\"doc-tool-actions\"><button class=\"btn small discard-accent\" id=\"docDiscardInline\" type=\"button\" disabled>Descartar</button><button class=\"btn small save-accent\" id=\"docSaveInline\" type=\"button\" disabled>Salvar</button></div></div>`:''}<div class="doc-note">Use esta área como um documento livre da etapa. Você pode escrever como em um arquivo do Word, inserir imagens em qualquer posição, aplicar negrito, aumentar o tamanho e criar listas com bolinhas.</div><div class="doc-canvas"><div class="doc-page" id="stepDocEditor" contenteditable="${editable?'true':'false'}" spellcheck="${editable?'true':'false'}">${stepDocSaved}</div></div></section>`;
+  const editor=$('#stepDocEditor');
+  if(editable){
+    ['mouseup','keyup','focus'].forEach(evt=>editor.addEventListener(evt,storeRange));
+    editor.addEventListener('input',()=>{storeRange(); stepDocDirty=editor.innerHTML!==stepDocSaved; updateDocButtons()});
+  }
+  updateDocButtons();
+}
+function renderAnalysisPanel(){
+  const p=currentProcess(); const cards=p.issueCards.filter(c=>c.scope==='step'&&c.stepIndex===stepModalIndex).slice().reverse();
+  const stepName=p.etapas[stepModalIndex]?.title||`Etapa ${stepModalIndex+1}`;
+  E.analysisPanel.innerHTML=`<section class="doc-layout"><div class="issues-head"><div><strong>Leitura crítica da etapa</strong><div class="muted">Os cards abaixo também aparecem automaticamente na página principal do processo <strong>${esc(p.name)}</strong>.</div></div>${state.ui.structureEdit?`<button class=\"btn small\" data-add-card=\"${stepModalIndex}\" type=\"button\">Adicionar card</button>`:''}</div><div class="analysis-note">Esta etapa está vinculada a <strong>${esc(stepName)}</strong>. Cada card criado aqui mantém o mesmo modelo visual da seção principal de leitura crítica.</div>${cards.length?`<div class="analysis-stack">${cards.map(renderIssueCard).join('')}</div>`:'<div class="empty-state">Nenhum card de gargalo e impacto foi criado para esta etapa ainda.</div>'}</section>`;
+  $$('.issue-text',E.analysisPanel).forEach(autoGrow);
+  const stack=$('.analysis-stack',E.analysisPanel);
+  if(stack) stack.scrollTop=stack.scrollHeight;
+}
+function showStepTab(tab){
+  stepModalTab=tab;
+  $$('[data-step-tab]').forEach(b=>b.classList.toggle('active',b.dataset.stepTab===tab));
+  E.docPanel.classList.toggle('hidden',tab!=='doc'); E.analysisPanel.classList.toggle('hidden',tab!=='analysis');
+}
+function resetStepDialogFrame(){
+  E.stepDialog.style.position='';
+  E.stepDialog.style.left='';
+  E.stepDialog.style.top='';
+  E.stepDialog.style.margin='';
+  E.stepDialog.style.transform='';
+  E.stepDialog.style.width='';
+  E.stepDialog.style.height='';
+  E.stepDialog.style.maxHeight='';
+  E.stepDialog.style.resize='';
+}
+function openStepModal(i,tab='doc'){
+  stepModalIndex=i; const s=currentProcess().etapas[i]; if(!s) return;
+  resetStepDialogFrame();
+  E.stepDialog.style.resize='both';
+  E.stepModalNumber.textContent=s.step; E.stepModalTag.textContent=s.tag; E.stepModalTitle.textContent=s.title; E.stepModalText.textContent=s.text||'Resumo da etapa.';
+  renderDocPanel(); renderAnalysisPanel(); showStepTab(tab); E.stepModal.classList.remove('hidden'); updateDocButtons();
+}
+function toggleFullscreen(force=null){
+  fullscreenStep=typeof force==='boolean'?force:!fullscreenStep;
+  if(fullscreenStep){
+    E.stepDialog.style.width='';
+    E.stepDialog.style.height='';
+    E.stepDialog.style.maxHeight='';
+    E.stepDialog.style.resize='none';
+  }else{
+    E.stepDialog.style.resize='both';
+  }
+  E.stepDialog.classList.toggle('fullscreen',fullscreenStep);
+  E.toggleFullscreenBtn.textContent=fullscreenStep?'Sair da tela cheia':'Tela cheia';
+}
+function saveDoc(show=true){
+  const editor=$('#stepDocEditor'); if(!editor||stepModalIndex==null) return;
+  currentProcess().etapas[stepModalIndex].documentHtml=sanitizeDoc(editor.innerHTML||'');
+  stepDocSaved=currentProcess().etapas[stepModalIndex].documentHtml; stepDocDirty=false; updateDocButtons();
+  commitSave(show?'Conteúdo da etapa salvo com sucesso.':'As alterações foram gravadas.');
+}
+function discardDoc(){
+  const editor=$('#stepDocEditor'); if(!editor) return; editor.innerHTML=stepDocSaved; stepDocDirty=false; updateDocButtons(); storeRange(); showToast('Alterações descartadas.')
+}
+function closeStep(force=false){
+  if(!force&&(stepDocDirty||anyIssueDrafts())) return runOrConfirm(()=>closeStep(true));
+  E.stepModal.classList.add('hidden'); stepModalIndex=null; stepModalTab='doc'; stepDocDirty=false; stepDocSaved=''; toggleFullscreen(false); resetStepDialogFrame();
+}
+function saveAllIssueDrafts(silent=true){Object.keys(issueDrafts).forEach(id=>saveIssue(id,silent))}
+function getCardDraft(id){
+  if(!issueDrafts[id]){const found=getStoredCard(id); if(!found) return null; issueDrafts[id]={original:clone(found.card),draft:clone(found.card)}}
+  return issueDrafts[id];
+}
+function saveIssue(id,silent=false){
+  const payload=issueDrafts[id], found=getStoredCard(id); if(!payload||!found) return;
+  Object.assign(found.card,clone(payload.draft)); delete issueDrafts[id];
+  commitSave(silent?'As alterações foram gravadas.':'Card salvo com sucesso.');
+  renderIssues(); if(stepModalIndex!=null) renderAnalysisPanel();
+}
+function discardIssue(id){
+  const payload=issueDrafts[id];
+  if(payload?.isNew){
+    const found=getStoredCard(id);
+    if(found){
+      const idx=found.collection.findIndex(c=>c.id===id);
+      if(idx>=0) found.collection.splice(idx,1);
+    }
+    delete issueModes[id];
+  }
+  delete issueDrafts[id];
+  dirty=JSON.stringify(state)!==JSON.stringify(saved);
+  renderSaveBar();
+  renderIssues(); if(stepModalIndex!=null) renderAnalysisPanel(); showToast('Alterações descartadas.')
+}
+function updateIssue(id,group,field,value){
+  const payload=getCardDraft(id); if(!payload) return;
+  payload.draft[group][field]=value;
+  const cardEl=document.querySelector(`[data-card="${id}"]`);
+  if(cardEl){
+    const saveBtn=cardEl.querySelector('[data-save-card]');
+    const discardBtn=cardEl.querySelector('[data-discard-card]');
+    if(saveBtn) saveBtn.disabled=false;
+    if(discardBtn) discardBtn.disabled=false;
+  }
+  renderSaveBar();
+}
+async function deleteIssue(id){
+  const found=getStoredCard(id); if(!found) return;
+  const ok=await confirmBox('Deseja realmente excluir este card de leitura crítica?',{title:'Excluir card',confirmText:'Excluir',danger:true});
+  if(!ok) return;
+  const idx=found.collection.findIndex(c=>c.id===id); if(idx>=0) found.collection.splice(idx,1);
+  delete issueDrafts[id]; delete issueModes[id];
+  commitSave('Card excluído com sucesso.'); renderIssues(); if(stepModalIndex!=null) renderAnalysisPanel();
+}
+function addIssue(scope='process', stepIndex=null){
+  const card=makeIssueCard({scope,stepIndex});
+  if(scope==='global') state.globalIssueCards.push(card); else currentProcess().issueCards.push(card);
+  issueModes[card.id]=scope==='global'?'impacto':'gargalo';
+  commitSave('Card criado com sucesso.');
+  renderIssues();
+  if(stepModalIndex!=null){
+    renderAnalysisPanel();
+    const stack=$('.analysis-stack',E.analysisPanel);
+    if(stack) stack.scrollTop=stack.scrollHeight;
+  }
+}
+function toggleIssueCreator(force=null){issueCreatorOpen=typeof force==='boolean'?force:!issueCreatorOpen; if(issueCreatorOpen){issueCreatorMode='process'; issueCreatorStep=0} renderIssues()}
+function createIssueFromMain(){if(issueCreatorMode==='linked') addIssue('step',issueCreatorStep); else if(issueCreatorMode==='global') addIssue('global',null); else addIssue('process',null); issueCreatorOpen=false; renderIssues()}
+function addSystem(){currentProcess().systems.push(''); setDirty(); renderSystems(); const inp=$(`[data-system="${currentProcess().systems.length-1}"]`); if(inp) inp.focus()}
+async function removeSystem(i){if(currentProcess().systems.length<=1) return alertBox('É preciso manter ao menos um campo de sistema.','Atenção'); currentProcess().systems.splice(i,1); setDirty(); renderSystems()}
+async function addSector(){const name=await promptBox('Informe o nome do novo setor.',{title:'Novo setor',inputLabel:'Nome do setor',placeholder:'Digite o nome do setor',confirmText:'Criar setor'}); if(!name) return; const base=slugify(name)||'novo-setor'; let key=base,n=2; while(state.sectors[key]) key=`${base}-${n++}`; const p=makeProcess('Novo processo',key); state.sectors[key]={name,processes:[p]}; state.ui.activeProcessBySector[key]=p.id; state.ui.processManualBySector[key]=false; state.ui.currentSector=key; setDirty(); render()}
+async function renameSector(){const name=await promptBox('Edite o nome do setor selecionado.',{title:'Editar setor',inputLabel:'Nome do setor',defaultValue:currentSector().name,confirmText:'Salvar setor'}); if(!name) return; currentSector().name=name; setDirty(); renderSectors()}
+async function removeSector(){
+  const keys=Object.keys(state.sectors);
+  if(keys.length<=1) return alertBox('É preciso manter ao menos um setor no sistema.','Atenção');
+  const sector=currentSector();
+  const ok=await confirmBox(`Deseja excluir o setor "${sector.name}"? Todos os processos deste setor também serão removidos.`,{title:'Excluir setor',confirmText:'Excluir setor',danger:true});
+  if(!ok) return;
+  const currentKey=currentSectorKey();
+  delete state.sectors[currentKey];
+  delete state.ui.activeProcessBySector[currentKey];
+  delete state.ui.processManualBySector[currentKey];
+  const remaining=Object.keys(state.sectors);
+  state.ui.currentSector=remaining[0];
+  processSearch='';
+  setDirty();
+  render();
+}
+async function addProcess(){const name=await promptBox('Informe o nome do novo processo.',{title:'Novo processo',inputLabel:'Nome do processo',placeholder:'Digite o nome do processo',confirmText:'Criar processo'}); if(!name) return; const p=makeProcess(name,currentSectorKey()); currentSector().processes.push(p); state.ui.activeProcessBySector[currentSectorKey()]=p.id; state.ui.processManualBySector[currentSectorKey()]=false; commitSave('Processo criado com sucesso.'); render()}
+async function renameProcess(){const p=currentProcess(), old=p.name; const name=await promptBox('Edite o nome do processo selecionado.',{title:'Editar processo',inputLabel:'Nome do processo',defaultValue:p.name,confirmText:'Salvar processo'}); if(!name) return; p.name=name; if(p.processIntro===`Mapeamento do processo "${old}".`) p.processIntro=`Mapeamento do processo "${name}".`; setDirty(); render()}
+async function removeProcess(){if(currentSector().processes.length<=1) return alertBox('É preciso manter ao menos um processo no setor.','Atenção'); const ok=await confirmBox(`Deseja excluir o processo "${currentProcess().name}"? Esta ação remove o processo atual da lista.`,{title:'Excluir processo',confirmText:'Excluir processo',danger:true}); if(!ok) return; currentSector().processes=currentSector().processes.filter(p=>p.id!==currentProcess().id); state.ui.activeProcessBySector[currentSectorKey()]=currentSector().processes[0].id; state.ui.processManualBySector[currentSectorKey()]=false; setDirty(); render()}
+function addStep(){currentProcess().etapas.push(makeStep(currentProcess().etapas.length,{title:'Nova etapa',text:'Descreva a etapa do processo.'})); commitSave('Nova etapa criada com sucesso.'); render()}
+async function removeStep(i){if(currentProcess().etapas.length<=1) return alertBox('É preciso manter ao menos uma etapa nesta seção.','Atenção'); const ok=await confirmBox('Deseja realmente excluir esta etapa?',{title:'Excluir etapa',confirmText:'Excluir',danger:true}); if(!ok) return; currentProcess().etapas.splice(i,1); currentProcess().issueCards=currentProcess().issueCards.filter(c=>!(c.scope==='step'&&c.stepIndex===i)).map(c=>{if(c.scope==='step'&&typeof c.stepIndex==='number'&&c.stepIndex>i) c.stepIndex-=1; return c}); currentProcess().etapas.forEach((s,idx)=>{if(!s.step||/^\d+$/.test(String(s.step))) s.step=String(idx+1); if(!s.tag||/^Etapa\s+\d+/i.test(s.tag)) s.tag=`Etapa ${String(idx+1).padStart(2,'0')}`}); commitSave('Etapa excluída com sucesso.'); render()}
+
+function render(){
+  updateSidebar(); renderHero(); renderSectors(); renderSearch(); renderProcessList(); renderSummary(); renderSystems(); renderSteps(); renderIssues(); renderCollapse(); $$('.text-field,.issue-text,.editor-textarea').forEach(autoGrow); renderSaveBar();
+}
+function initDraggable(handle, dialog){
+  if(!handle||!dialog||dialog.dataset.dragReady==='1') return;
+  dialog.dataset.dragReady='1'; let dragging=false,ox=0,oy=0;
+  handle.addEventListener('mousedown',e=>{
+    if(e.target.closest('button,input,textarea,select,label,a')) return;
+    const r=dialog.getBoundingClientRect(); dialog.style.position='fixed'; dialog.style.left=r.left+'px'; dialog.style.top=r.top+'px'; dialog.style.margin='0'; dialog.style.transform='none';
+    ox=e.clientX-r.left; oy=e.clientY-r.top; dragging=true; e.preventDefault();
+  });
+  document.addEventListener('mousemove',e=>{if(!dragging) return; dialog.style.left=Math.min(Math.max(12,e.clientX-ox),window.innerWidth-dialog.offsetWidth-12)+'px'; dialog.style.top=Math.min(Math.max(12,e.clientY-oy),window.innerHeight-dialog.offsetHeight-12)+'px'});
+  document.addEventListener('mouseup',()=>dragging=false);
+}
+function showLaunch(){
+  const el=document.createElement('div');
+  el.className='launch waiting';
+  el.innerHTML=`<div class="launch-inner"><div class="launch-spinner"><div class="launch-ring"></div><div class="launch-label">Carregando ambiente</div><div class="launch-hint">Preparando o sistema</div></div></div>`;
+  document.body.appendChild(el);
+  const start=()=>{el.classList.remove('waiting'); void el.offsetWidth; el.classList.add('seq'); setTimeout(()=>{el.classList.add('hidden'); setTimeout(()=>el.remove(),420)},1440)};
+  if(document.readyState==='complete') start(); else window.addEventListener('load',start,{once:true});
+}
+
+document.addEventListener('click',async e=>{
+  const collapse=e.target.closest('[data-collapse]');
+  const sector=e.target.closest('[data-sector]');
+  const process=e.target.closest('[data-process]');
+  const insert=e.target.closest('[data-insert]');
+  const removeSystemBtn=e.target.closest('[data-remove-system]');
+  const openStepBtn=e.target.closest('[data-open-step]');
+  const deleteStepBtn=e.target.closest('[data-delete-step]');
+  const editStepBtn=e.target.closest('[data-edit-step]');
+  const cardTabBtn=e.target.closest('[data-card-tab]');
+  const deleteCardBtn=e.target.closest('[data-delete-card]');
+  const saveCardBtn=e.target.closest('[data-save-card]');
+  const discardCardBtn=e.target.closest('[data-discard-card]');
+  const addCardBtn=e.target.closest('[data-add-card]');
+
+  if(collapse){const k=collapse.dataset.collapse; state.ui.collapsed[k]=!state.ui.collapsed[k]; renderCollapse(); renderSystems(); return}
+  if(insert){const t=e.target.closest('.text-shell')?.querySelector('textarea'); if(t) insertAtCursor(t,insert.dataset.insert||''); return}
+  if(e.target===E.sectorTrigger||E.sectorTrigger.contains(e.target)){const open=!E.sectorBlock.classList.contains('open'); E.sectorBlock.classList.toggle('open',open); E.sectorTrigger.setAttribute('aria-expanded',String(open)); return}
+  if(sector){runOrConfirm(()=>{state.ui.currentSector=sector.dataset.sector; issueCreatorOpen=false; E.sectorBlock.classList.remove('open'); E.sectorTrigger.setAttribute('aria-expanded','false'); render(); if(!E.stepModal.classList.contains('hidden')) closeStep(true)}); return}
+  if(process){runOrConfirm(()=>{state.ui.activeProcessBySector[currentSectorKey()]=process.dataset.process; state.ui.processManualBySector[currentSectorKey()]=true; issueCreatorOpen=false; render(); if(!E.stepModal.classList.contains('hidden')) closeStep(true)}); return}
+  if(removeSystemBtn){await removeSystem(+removeSystemBtn.dataset.removeSystem); return}
+  if(openStepBtn){openStepModal(+openStepBtn.dataset.openStep,'doc'); return}
+  if(deleteStepBtn){await removeStep(+deleteStepBtn.dataset.deleteStep); return}
+  if(e.target.closest('#addStepBtn')){addStep(); return}
+  if(editStepBtn){renderEditor('step',+editStepBtn.dataset.editStep); return}
+  if(e.target.id==='openCreateCardBtn'){toggleIssueCreator(); return}
+  if(e.target.id==='cancelCreateCardBtn'){toggleIssueCreator(false); return}
+  if(e.target.id==='createCardBtn'){createIssueFromMain(); return}
+  if(addCardBtn){addIssue('step',+addCardBtn.dataset.addCard); return}
+  if(deleteCardBtn){await deleteIssue(deleteCardBtn.dataset.deleteCard); return}
+  if(saveCardBtn){saveIssue(saveCardBtn.dataset.saveCard); return}
+  if(discardCardBtn){discardIssue(discardCardBtn.dataset.discardCard); return}
+  if(cardTabBtn){
+    const cardEl=cardTabBtn.closest('[data-card]'); const id=cardEl?.dataset.card; if(!id) return;
+    issueModes[id]=cardTabBtn.dataset.cardTab;
+    const stored=getStoredCard(id); const card=stored?getDraftCard(stored.card):null; const mode=issueModes[id];
+    cardEl.dataset.mode=mode; cardEl.classList.toggle('mode-gargalo',mode==='gargalo'); cardEl.classList.toggle('mode-impacto',mode==='impacto');
+    $$('[data-panel]',cardEl).forEach(p=>p.classList.toggle('hidden',p.dataset.panel!==mode));
+    const tabs=cardEl.querySelector('.issue-tabs');
+    if(tabs){
+      tabs.querySelectorAll('[data-card-tab]').forEach(btn=>{
+        const isActive=btn.dataset.cardTab===mode;
+        btn.classList.toggle('active',isActive);
+      });
+    }
+    const preview=cardEl.querySelector('.issue-preview'); if(preview) preview.innerHTML=`<div>${mode==='impacto'?'<span class="mode-badge mode-i">Impacto</span>':'<span class="mode-badge mode-g">Gargalo</span>'}</div>`;
+    return;
+  }
+  if(e.target.matches('[data-editor-open]')){renderEditor(e.target.dataset.editorOpen,e.target.dataset.editorIndex!==undefined?+e.target.dataset.editorIndex:null); return}
+  if(e.target.id==='docImageUrlBtn'){await addDocImageUrl(); return}
+  if(e.target.matches('[data-doc-cmd]')){const cmd=e.target.dataset.docCmd; if(cmd==='bold') wrapSel('strong'); else if(cmd==='lg') wrapSel('span','lg'); else if(cmd==='ul') insertDocHtml('<ul><li>Novo item</li></ul>'); const editor=$('#stepDocEditor'); if(editor){stepDocDirty=editor.innerHTML!==stepDocSaved; updateDocButtons()} return}
+  if(e.target.id==='docSaveBtn'||e.target.id==='docSaveInline'){saveDoc(); return}
+  if(e.target.id==='docDiscardBtn'||e.target.id==='docDiscardInline'){discardDoc(); return}
+  if(e.target.matches('[data-global-save]')){commitSave(); return}
+  if(e.target.matches('[data-global-discard]')){discardAll(); return}
+  if(e.target.id==='toggleIssuesFullscreenBtn'){state.ui.issuesFullscreen=!state.ui.issuesFullscreen; renderIssues(); return}
+  if(e.target.matches('[data-step-tab]')){showStepTab(e.target.dataset.stepTab); return}
+  if(!e.target.closest('#sectorBlock')){E.sectorBlock.classList.remove('open'); E.sectorTrigger.setAttribute('aria-expanded','false')}
+});
+document.addEventListener('change',async e=>{
+  if(e.target.name==='creatorMode'){issueCreatorMode=e.target.value||'process'; renderIssues(); return}
+  if(e.target.id==='creatorStepSelect'){issueCreatorStep=+e.target.value||0; return}
+  if(e.target.id==='docImageUpload'&&e.target.files?.[0]){await addDocImageUpload(e.target.files[0]); e.target.value=''; return}
+});
+document.addEventListener('input',e=>{
+  const system=e.target.closest('[data-system]');
+  const cardTitle=e.target.closest('[data-card-title]');
+  const cardText=e.target.closest('[data-card-text]');
+  if(system){currentProcess().systems[+system.dataset.system]=system.value; setDirty()}
+  if(e.target===E.processSummaryField){currentProcess().processSummary=e.target.value; autoGrow(e.target); setDirty()}
+  if(e.target.id==='heroEyebrowInput'){state.hero.eyebrow=e.target.value; E.heroEyebrow.textContent=e.target.value; setDirty()}
+  if(e.target.id==='heroTitleInput'){state.hero.title=e.target.value; E.heroTitle.textContent=e.target.value; autoGrow(e.target); setDirty()}
+  if(e.target.id==='heroDescriptionInput'){state.hero.description=e.target.value; E.heroDescription.textContent=e.target.value; autoGrow(e.target); setDirty()}
+  if(e.target.id==='processIntroInput'){currentProcess().processIntro=e.target.value; E.processIntro.textContent=e.target.value; autoGrow(e.target); setDirty()}
+  if(e.target.id==='stepNumberInput'){const i=+E.editorModal.dataset.index, s=currentProcess().etapas[i]; if(s){s.step=e.target.value; const el=$(`[data-step="${i}"] .step-badge`); if(el) el.textContent=s.step; E.stepModalNumber.textContent=s.step; setDirty()}}
+  if(e.target.id==='stepTitleInput'){const i=+E.editorModal.dataset.index, s=currentProcess().etapas[i]; if(s){s.title=e.target.value; const el=$(`[data-step="${i}"] .stage-title`); if(el) el.textContent=s.title; E.stepModalTitle.textContent=s.title; setDirty()}}
+  if(e.target.id==='stepSummaryInput'){const i=+E.editorModal.dataset.index, s=currentProcess().etapas[i]; if(s){s.text=e.target.value; const el=$(`[data-step="${i}"] .stage-summary`); if(el) el.textContent=s.text; E.stepModalText.textContent=s.text; autoGrow(e.target); setDirty()}}
+  if(cardTitle){updateIssue(cardTitle.dataset.cardId,cardTitle.dataset.cardTitle,'title',cardTitle.value)}
+  if(cardText){updateIssue(cardText.dataset.cardId,cardText.dataset.cardText,'text',cardText.value); autoGrow(cardText)}
+  renderSaveBar();
+});
+document.addEventListener('keydown',e=>{
+  const collapse=e.target.closest('[data-collapse]');
+  if(collapse&&(e.key==='Enter'||e.key===' ')){e.preventDefault(); const k=collapse.dataset.collapse; state.ui.collapsed[k]=!state.ui.collapsed[k]; renderCollapse(); renderSystems(); return}
+  if(e.key==='Escape'&&!E.dialogModal.classList.contains('hidden')) return resolveDialog({confirmed:false,value:null});
+  if(e.key==='Escape'&&!E.unsavedModal.classList.contains('hidden')) return closeUnsaved();
+  if(e.key==='Escape'&&!E.stepModal.classList.contains('hidden')) return closeStep();
+  if(e.key==='Escape'&&!E.editorModal.classList.contains('hidden')) return E.editorModal.classList.add('hidden');
+  if(e.key==='Escape'&&state.ui.issuesFullscreen){state.ui.issuesFullscreen=false; renderIssues()}
+  if(e.target===E.dialogInput&&e.key==='Enter'){e.preventDefault(); E.dialogPrimaryBtn.click()}
+});
+E.toggleStructureBtn.addEventListener('click',()=>{state.ui.structureEdit=!state.ui.structureEdit; if(!state.ui.structureEdit){issueCreatorOpen=false; E.editorModal.classList.add('hidden'); stepDocDirty=false;} render(); if(stepModalIndex!=null&&!E.stepModal.classList.contains('hidden')){renderDocPanel(); renderAnalysisPanel(); showStepTab(stepModalTab);} });
+E.openEditorBtn.addEventListener('click',()=>renderEditor('hub'));
+E.toggleSidebarBtn.addEventListener('click',()=>{state.ui.sidebarCollapsed=!state.ui.sidebarCollapsed; updateSidebar()});
+E.addSectorBtn.addEventListener('click',addSector);
+E.renameSectorBtn.addEventListener('click',renameSector);
+E.removeSectorBtn.addEventListener('click',removeSector);
+E.addProcessBtn.addEventListener('click',addProcess);
+E.renameProcessBtn.addEventListener('click',renameProcess);
+E.removeProcessBtn.addEventListener('click',removeProcess);
+E.editHeroBtn.addEventListener('click',()=>renderEditor('hero'));
+E.editProcessIntroBtn.addEventListener('click',()=>renderEditor('process'));
+E.addSystemBtn.addEventListener('click',addSystem);
+E.closeEditorBtn.addEventListener('click',()=>E.editorModal.classList.add('hidden'));
+E.editorBackBtn.addEventListener('click',()=>renderEditor('hub'));
+E.clearStorageBtn.addEventListener('click',async()=>{const ok=await confirmBox('Deseja limpar todo o conteúdo salvo no navegador e restaurar os dados padrão?',{title:'Limpar salvamento',confirmText:'Limpar conteúdo',danger:true}); if(!ok) return; STORAGE_KEYS.forEach(k=>localStorage.removeItem(k)); state=defaults(); saved=clone(state); dirty=false; issueDrafts={}; issueModes={}; processSearch=''; render(); showToast('Conteúdo salvo limpo.')});
+E.toggleFullscreenBtn.addEventListener('click',()=>toggleFullscreen());
+E.closeStepBtn.addEventListener('click',()=>closeStep());
+if(E.docSaveBtn) E.docSaveBtn.addEventListener('click',()=>saveDoc());
+if(E.docDiscardBtn) E.docDiscardBtn.addEventListener('click',()=>discardDoc());
+E.saveAllBtn.addEventListener('click',()=>commitSave());
+E.discardAllBtn.addEventListener('click',discardAll);
+E.unsavedSaveBtn.addEventListener('click',()=>{if(stepDocDirty) saveDoc(false); if(anyIssueDrafts()) saveAllIssueDrafts(true); if(dirty||stepDocDirty) commitSave(); const a=pendingAction; closeUnsaved(); if(a) a()});
+E.unsavedDiscardBtn.addEventListener('click',()=>{discardAll(); const a=pendingAction; closeUnsaved(); if(a) a()});
+E.unsavedKeepBtn.addEventListener('click',closeUnsaved);
+E.dialogPrimaryBtn.addEventListener('click',()=>resolveDialog({confirmed:true,value:E.dialogInput.value}));
+E.dialogSecondaryBtn.addEventListener('click',()=>resolveDialog({confirmed:false,value:null}));
+E.dialogModal.addEventListener('click',e=>{if(e.target===E.dialogModal) resolveDialog({confirmed:false,value:null})});
+E.unsavedModal.addEventListener('click',e=>{if(e.target===E.unsavedModal) closeUnsaved()});
+E.stepModal.addEventListener('click',e=>{if(e.target===E.stepModal) closeStep()});
+E.issuesBackdrop.addEventListener('click',()=>{state.ui.issuesFullscreen=false; renderIssues()});
+window.addEventListener('beforeunload',e=>{if(!anythingDirty()) return; e.preventDefault(); e.returnValue=''});
+document.addEventListener('focusout',()=>setTimeout(renderSaveBar,0),true);
+
+initDraggable(E.editorHead, $('.editor-dialog',E.editorModal));
+initDraggable(E.stepHead, E.stepDialog);
+initDraggable($('#unsavedHead'), $('.dialog',E.unsavedModal));
+initDraggable(E.dialogHead, $('.dialog',E.dialogModal));
+showLaunch();
+render();
+</script>
+
+<script>
+(()=>{
+  const deepEqual=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+  const cloneSafe=v=>JSON.parse(JSON.stringify(v));
+
+  function savedSector(key=currentSectorKey()){
+    return saved?.sectors?.[key] || null;
+  }
+  function savedProcess(key=currentSectorKey(), processId=currentProcessId()){
+    return savedSector(key)?.processes?.find(p=>p.id===processId) || null;
+  }
+  function savedStep(index){
+    return savedProcess()?.etapas?.[index] || null;
+  }
+  function scopeDirtySystems(){
+    const proc=savedProcess();
+    if(!proc) return false;
+    return !deepEqual(currentProcess().systems, proc.systems || []);
+  }
+  function scopeDirtySummary(){
+    const proc=savedProcess();
+    if(!proc) return false;
+    return String(currentProcess().processSummary||'') !== String(proc.processSummary||'');
+  }
+  function scopeDirtyEditor(){
+    if(E.editorModal.classList.contains('hidden')) return false;
+    const mode=E.editorModal.dataset.mode || 'hub';
+    if(mode==='hero'){
+      return !deepEqual(
+        {eyebrow:state.hero.eyebrow||'', title:state.hero.title||'', description:state.hero.description||''},
+        {eyebrow:saved?.hero?.eyebrow||'', title:saved?.hero?.title||'', description:saved?.hero?.description||''}
+      );
+    }
+    if(mode==='process'){
+      const proc=savedProcess();
+      if(!proc) return false;
+      return String(currentProcess().processIntro||'') !== String(proc.processIntro||'');
+    }
+    if(mode==='step'){
+      const idx=Number(E.editorModal.dataset.index||0);
+      const cur=currentProcess().etapas?.[idx];
+      const sav=savedStep(idx);
+      if(!cur || !sav) return false;
+      return !deepEqual(
+        {step:cur.step||'', title:cur.title||'', text:cur.text||''},
+        {step:sav.step||'', title:sav.title||'', text:sav.text||''}
+      );
+    }
+    return false;
+  }
+  function recomputeDirty(){
+    dirty = !deepEqual(state, saved);
+    renderSaveBar();
+    updateScopedButtons();
+  }
+
+  const originalRenderSaveBar = renderSaveBar;
+  renderSaveBar = function(){
+    originalRenderSaveBar();
+    updateScopedButtons();
+  };
+
+  setDirty = function(){
+    recomputeDirty();
+  };
+
+  const originalCommitSave = commitSave;
+  commitSave = function(msg='As alterações foram gravadas com sucesso.'){
+    originalCommitSave(msg);
+    updateScopedButtons();
+  };
+
+  const originalDiscardAll = discardAll;
+  discardAll = function(){
+    originalDiscardAll();
+    updateScopedButtons();
+  };
+
+  updateIssue = function(id,group,field,value){
+    const payload=getCardDraft(id);
+    if(!payload) return;
+    payload.draft[group][field]=value;
+    if(deepEqual(payload.draft, payload.original)){
+      delete issueDrafts[id];
+    }
+    const cardEl=document.querySelector(`[data-card="${id}"]`);
+    const isDirty=!!issueDrafts[id];
+    if(cardEl){
+      const saveBtn=cardEl.querySelector('[data-save-card]');
+      const discardBtn=cardEl.querySelector('[data-discard-card]');
+      if(saveBtn) saveBtn.disabled=!isDirty;
+      if(discardBtn) discardBtn.disabled=!isDirty;
+    }
+    renderSaveBar();
+  };
+
+  function updateScopedButtons(){
+    const systemsDirty=scopeDirtySystems();
+    const summaryDirty=scopeDirtySummary();
+    const editorDirty=scopeDirtyEditor();
+
+    const systemsScope=document.querySelector('#systemsSection .section-actions');
+    if(systemsScope){
+      systemsScope.querySelectorAll('[data-global-save],[data-global-discard]').forEach(btn=>btn.disabled=!systemsDirty);
+    }
+
+    const summaryScope=document.querySelector('#summaryCard .section-actions');
+    if(summaryScope){
+      summaryScope.querySelectorAll('[data-global-save],[data-global-discard]').forEach(btn=>btn.disabled=!summaryDirty);
+    }
+
+    const editorScope=document.querySelector('#editorModal .editor-actions');
+    if(editorScope){
+      editorScope.querySelectorAll('[data-global-save],[data-global-discard]').forEach(btn=>btn.disabled=!editorDirty);
+    }
+  }
+
+  const originalRender = render;
+  render = function(){
+    originalRender();
+    updateScopedButtons();
+  };
+
+  function discardSystemsScope(){
+    const proc=savedProcess();
+    if(!proc) return;
+    currentProcess().systems = cloneSafe(proc.systems || []);
+    renderSystems();
+    recomputeDirty();
+  }
+  function discardSummaryScope(){
+    const proc=savedProcess();
+    if(!proc) return;
+    currentProcess().processSummary = proc.processSummary || '';
+    renderSummary();
+    recomputeDirty();
+  }
+  function discardEditorScope(){
+    const mode=E.editorModal.dataset.mode || 'hub';
+    if(mode==='hero'){
+      state.hero = cloneSafe(saved.hero || state.hero);
+      renderHero();
+      renderEditor('hero');
+    } else if(mode==='process'){
+      const proc=savedProcess();
+      if(!proc) return;
+      currentProcess().processIntro = proc.processIntro || '';
+      renderProcessList();
+      renderEditor('process');
+    } else if(mode==='step'){
+      const idx=Number(E.editorModal.dataset.index||0);
+      const sav=savedStep(idx);
+      if(!sav) return;
+      const cur=currentProcess().etapas[idx];
+      if(!cur) return;
+      cur.step=sav.step||'';
+      cur.title=sav.title||'';
+      cur.text=sav.text||'';
+      renderSteps();
+      if(stepModalIndex===idx && !E.stepModal.classList.contains('hidden')){
+        E.stepModalNumber.textContent=cur.step;
+        E.stepModalTitle.textContent=cur.title;
+        E.stepModalText.textContent=cur.text;
+      }
+      renderEditor('step', idx);
+    }
+    recomputeDirty();
+  }
+
+  document.addEventListener('click',e=>{
+    const btn=e.target.closest('[data-global-save],[data-global-discard]');
+    if(!btn) return;
+
+    if(btn.closest('#systemsSection .section-actions')){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      if(btn.matches('[data-global-save]')){
+        if(scopeDirtySystems()) commitSave('Sistema utilizado salvo com sucesso.');
+      } else {
+        discardSystemsScope();
+      }
+      return;
+    }
+
+    if(btn.closest('#summaryCard .section-actions')){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      if(btn.matches('[data-global-save]')){
+        if(scopeDirtySummary()) commitSave('Resumo do processo salvo com sucesso.');
+      } else {
+        discardSummaryScope();
+      }
+      return;
+    }
+
+    if(btn.closest('#editorModal .editor-actions')){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      if(btn.matches('[data-global-save]')){
+        if(scopeDirtyEditor()) commitSave('Alterações estruturais salvas com sucesso.');
+      } else {
+        discardEditorScope();
+      }
+    }
+  }, true);
+
+  document.addEventListener('input',e=>{
+    if(
+      e.target===E.processSummaryField ||
+      e.target.matches?.('.system-input') ||
+      e.target.closest?.('#editorModal')
+    ){
+      updateScopedButtons();
+    }
+  }, true);
+
+  document.addEventListener('focusout',()=>setTimeout(updateScopedButtons,0),true);
+  updateScopedButtons();
+})();
+</script>
+
+</body>
+</html>
